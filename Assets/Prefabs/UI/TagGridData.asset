@@ -1,0 +1,28 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4ebfbf98f4046473db1bea12e62e9aae, type: 3}
+  m_Name: TagGridData
+  m_EditorClassIdentifier: 
+  isRowHeightFixed: 1
+  showCross: 0
+  showAdd: 0
+  makeInteractable: 0
+  fixedTextSize: 18
+  flexGridPrefab: {fileID: 3063403908251195684, guid: 50aed6ec49810854b8f8efb5e01998ae, type: 3}
+  flexGridItemPrefab: {fileID: 8171871836275662648, guid: 70331ba897eb37f4db2ea9fefab18e25, type: 3}
+  containerAlignment: 0
+  addLastItemAddButton: 0
+  addLastItemAddTagSize: 0
+  flexGridLastItemAdd: {fileID: 0}
+  lastItemAddImage: {fileID: 0}
+  showLastItemText: 0
+  lastItemText: 
