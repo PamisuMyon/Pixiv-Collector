@@ -47,3 +47,5 @@ WIP: 目前仅有UI，毫无UX，BUG较多，未做优化，考虑重构中。
 [Recyclable Scroll Rect](https://github.com/MdIqubal/Recyclable-Scroll-Rect)
 
 [Flexible Grid Layout](https://github.com/mohsinkhan26/flex-grid-layout)
+
+[Unity Asynchronous Image Loader](https://github.com/Looooong/UnityAsyncImageLoader)
