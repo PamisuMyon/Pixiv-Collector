@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<component size="380,460" overflow="hidden">
+  <displayList>
+    <loader id="n0_tkn4" name="Image" xy="0,0" size="380,460" url="ui://paw0rq8stkn4i3" align="center" vAlign="middle" fill="scaleNoBorder">
+      <relation target="" sidePair="width-width,height-height,center-center,middle-middle"/>
+    </loader>
+    <graph id="n1_tkn4" name="n1" xy="0,374" size="380,86" type="rect" lineSize="0" fillColor="#99333333">
+      <relation target="" sidePair="width-width,bottom-bottom"/>
+    </graph>
+    <component id="n2_tkn4" name="SelectRadio" src="tkn4ia" fileName="Componets/Commons/RadioButton.xml" xy="0,374" size="380,86">
+      <relation target="" sidePair="left-right,bottom-bottom"/>
+    </component>
+    <image id="n3_tkn4" name="CollectedIcon" src="tkn4i1" fileName="Images/database.png" xy="15,394" size="48,48" aspect="true">
+      <relation target="" sidePair="left-left,bottom-top"/>
+    </image>
+  </displayList>
+</component>

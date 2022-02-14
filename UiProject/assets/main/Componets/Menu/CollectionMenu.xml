@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<component size="928,64">
+  <controller name="c1" pages="1,close,2,open" selected="0"/>
+  <displayList>
+    <component id="n0_tkn4" name="Collection" src="tkn4ii" fileName="Componets/CollectionButton.xml" xy="0,0" size="64,64" group="n2_tkn4">
+      <gearDisplay controller="c1" pages="0,1"/>
+      <relation target="" sidePair="width-width%,height-height%,middle-middle"/>
+    </component>
+    <component id="n1_tkn4" name="Close" src="tkn4ij" fileName="Componets/CloseButton.xml" xy="0,0" size="64,64" group="n2_tkn4">
+      <gearDisplay controller="c1" pages="0,2"/>
+      <relation target="" sidePair="width-width%,height-height%,middle-middle"/>
+    </component>
+    <component id="n12_aapx" name="n12" src="aapxjd" fileName="Componets/MenuBarDivider.xml" xy="64,0" group="n2_tkn4">
+      <gearDisplay controller="c1" pages="2"/>
+    </component>
+    <component id="n8_aapx" name="SelectAll" src="aapxj9" fileName="Componets/SelectAllButton.xml" xy="65,0" group="n2_tkn4">
+      <gearDisplay controller="c1" pages="2"/>
+    </component>
+    <component id="n13_aapx" name="n13" src="aapxjd" fileName="Componets/MenuBarDivider.xml" xy="129,0" group="n2_tkn4">
+      <gearDisplay controller="c1" pages="2"/>
+    </component>
+    <component id="n9_aapx" name="Clear" src="aapxja" fileName="Componets/SelectClearButton.xml" xy="130,0" group="n2_tkn4">
+      <gearDisplay controller="c1" pages="2"/>
+    </component>
+    <component id="n14_aapx" name="n14" src="aapxjd" fileName="Componets/MenuBarDivider.xml" xy="194,0" group="n2_tkn4">
+      <gearDisplay controller="c1" pages="2"/>
+    </component>
+    <component id="n10_aapx" name="Collect" src="aapxjb" fileName="Componets/CollectionAddButton.xml" xy="195,0" group="n2_tkn4">
+      <gearDisplay controller="c1" pages="2"/>
+    </component>
+    <component id="n15_aapx" name="n15" src="aapxjd" fileName="Componets/MenuBarDivider.xml" xy="259,0" group="n2_tkn4">
+      <gearDisplay controller="c1" pages="2"/>
+    </component>
+    <component id="n11_aapx" name="Remove" src="aapxjc" fileName="Componets/CollectionRemoveButton.xml" xy="260,0" group="n2_tkn4">
+      <gearDisplay controller="c1" pages="2"/>
+    </component>
+    <group id="n2_tkn4" name="CollectionBar" xy="0,0" size="64,64" advanced="true" layout="hz" excludeInvisibles="true"/>
+  </displayList>
+</component>

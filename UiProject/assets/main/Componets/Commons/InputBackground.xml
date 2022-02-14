@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<component size="128,128" bgColorEnabled="true">
+  <displayList>
+    <graph id="n0_gzsd" name="n0" xy="0,0" size="128,128" type="rect" lineSize="2" lineColor="#bf0e1620" fillColor="#bf1b2c34" corner="8">
+      <relation target="" sidePair="width-width,height-height"/>
+    </graph>
+  </displayList>
+</component>

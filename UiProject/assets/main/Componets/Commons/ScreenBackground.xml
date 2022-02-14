@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<component size="1280,800" bgColor="#0e171e">
+  <displayList>
+    <graph id="n0_aapx" name="n0" xy="0,0" size="1280,800" type="rect" lineSize="0" fillColor="#ff0e171e">
+      <relation target="" sidePair="width-width,height-height"/>
+    </graph>
+  </displayList>
+</component>

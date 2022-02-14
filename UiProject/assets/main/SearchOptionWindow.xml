@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<component size="401,529" extention="Label" initName="frame" bgColor="#0e171e">
+  <displayList>
+    <component id="n0_mi4a" name="n0" src="mi4aj1" fileName="Componets/Commons/DialogBackground.xml" xy="-3,-5" size="404,534">
+      <relation target="n4_mi4a" sidePair="rightext-right,topext-top,bottomext-bottom,leftext-left"/>
+    </component>
+    <text id="n1_mi4a" name="n1" xy="18,13" size="128,44" group="n4_mi4a" fontSize="32" color="#639cbf" text="SEARCH">
+      <relation target="" sidePair="left-left"/>
+    </text>
+    <text id="n2_mi4a" name="n2" xy="18,63" size="117,34" group="n4_mi4a" fontSize="24" color="#639cbf" text="Keywords">
+      <relation target="" sidePair="left-left"/>
+    </text>
+    <component id="n3_mi4a" name="Keywords" src="gzsdiq" fileName="Componets/Commons/InputField.xml" xy="18,103" size="365,46" group="n4_mi4a">
+      <relation target="" sidePair="width-width"/>
+    </component>
+    <text id="n5_mi4a" name="n5" xy="16,155" size="90,34" group="n4_mi4a" fontSize="24" color="#639cbf" text="Targets">
+      <relation target="" sidePair="left-left"/>
+    </text>
+    <component id="n20_qix0" name="Target1" src="aapxjl" fileName="Componets/Commons/Dropdown/Dropdown.xml" xy="16,195" size="365,46" group="n4_mi4a">
+      <ComboBox visibleItemCount="10">
+        <item title="Tags (partial match)" value="partial_match_for_tags"/>
+        <item title="Tags (perfect  match)" value="exact_match_for_tags"/>
+        <item title="Title, Caption" value="title_and_caption"/>
+      </ComboBox>
+    </component>
+    <text id="n7_mi4a" name="n7" xy="16,247" size="70,34" group="n4_mi4a" fontSize="24" color="#639cbf" text="Order">
+      <relation target="" sidePair="left-left"/>
+    </text>
+    <component id="n21_qix0" name="Order" src="aapxjl" fileName="Componets/Commons/Dropdown/Dropdown.xml" xy="16,287" size="365,46" group="n4_mi4a">
+      <ComboBox visibleItemCount="10">
+        <item title="Newest" value="date_desc"/>
+        <item title="Oldest" value="date_asc"/>
+      </ComboBox>
+    </component>
+    <text id="n15_aapx" name="n15" xy="16,347" size="73,34" group="n16_aapx" fontSize="24" color="#639cbf" text="Offset">
+      <relation target="" sidePair="left-left"/>
+    </text>
+    <component id="n8_mi4a" name="Offset" src="gzsdiq" fileName="Componets/Commons/InputField.xml" xy="98,339" size="150,46" group="n16_aapx">
+      <relation target="" sidePair="width-width"/>
+    </component>
+    <group id="n16_aapx" name="n16" xy="16,339" size="232,46" group="n4_mi4a" advanced="true"/>
+    <text id="n17_aapx" name="n17" xy="16,399" size="181,34" group="n19_aapx" fontSize="24" color="#639cbf" text="Min Bookmarks">
+      <relation target="" sidePair="left-left"/>
+    </text>
+    <component id="n18_aapx" name="MinBookMarks" src="gzsdiq" fileName="Componets/Commons/InputField.xml" xy="205,391" size="150,46" group="n19_aapx">
+      <relation target="" sidePair="width-width"/>
+    </component>
+    <group id="n19_aapx" name="n19" xy="16,391" size="339,46" group="n4_mi4a" advanced="true"/>
+    <graph id="n12_mi4a" name="n12" xy="16,443" size="368,12" group="n4_mi4a" type="rect" lineSize="0" fillColor="#00ffffff"/>
+    <component id="n9_mi4a" name="CancelButton" src="gzsdiu" fileName="Componets/Commons/TextButton.xml" xy="16,462" size="176,48" group="n11_mi4a">
+      <relation target="" sidePair="middle-middle,left-left"/>
+      <Button title="CANCEL" titleFontSize="22"/>
+    </component>
+    <component id="n10_mi4a" name="ConfirmButton" src="gzsdiu" fileName="Componets/Commons/TextButton.xml" xy="205,461" size="176,48" group="n11_mi4a">
+      <relation target="" sidePair="middle-middle,right-right"/>
+      <Button title="CONFIRM" titleFontSize="22"/>
+    </component>
+    <group id="n11_mi4a" name="n11" xy="16,461" size="365,49" group="n4_mi4a" advanced="true">
+      <relation target="" sidePair="width-width"/>
+    </group>
+    <group id="n4_mi4a" name="n4" xy="16,13" size="368,497" advanced="true" layout="vt" lineGap="6" excludeInvisibles="true"/>
+  </displayList>
+</component>

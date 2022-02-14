@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<component size="300,86">
+  <displayList>
+    <component id="n1_gzsd" name="n1" src="gzsdio" fileName="Componets/Commons/InputBackground.xml" xy="0,0" size="300,86">
+      <relation target="" sidePair="width-width,height-height"/>
+    </component>
+    <text id="n2_gzsd" name="text" xy="18,0" size="264,86" fontSize="26" color="#ffffff" vAlign="middle" autoSize="none" text="" input="true">
+      <relation target="" sidePair="width-width,height-height"/>
+    </text>
+  </displayList>
+  <customProperty target="text" propertyId="0"/>
+</component>

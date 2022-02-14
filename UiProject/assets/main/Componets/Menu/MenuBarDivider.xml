@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<component size="1,64">
+  <displayList>
+    <component id="n1_aapx" name="n1" src="tkn4ik" fileName="Componets/Commons/MenuButtonBackground.xml" xy="0,0" size="1,64">
+      <relation target="" sidePair="height-height"/>
+    </component>
+    <graph id="n0_aapx" name="n0" xy="0,6" size="1,52" type="rect" lineSize="0" fillColor="#ccffffff" corner="1">
+      <relation target="" sidePair="height-height%,middle-middle"/>
+    </graph>
+  </displayList>
+</component>

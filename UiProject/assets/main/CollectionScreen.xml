@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<component size="1280,800" bgColorEnabled="true" bgColor="#0e171e">
+  <displayList>
+    <component id="n0_tkn4" name="ImageList" src="tkn4id" fileName="Componets/ImageList.xml" xy="0,0" size="1280,800">
+      <relation target="" sidePair="width-width,height-height"/>
+    </component>
+    <component id="n1_tkn4" name="MenuBar" src="tkn4ic" fileName="Componets/Menu/MenuBar.xml" xy="0,0" size="300,64" aspect="true">
+      <relation target="" sidePair="left-left,top-top"/>
+    </component>
+  </displayList>
+</component>

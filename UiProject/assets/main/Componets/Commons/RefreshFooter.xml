@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<component size="800,96" bgColorEnabled="true" bgColor="#0e171e">
+  <controller name="c1" pages="0,,1," selected="0"/>
+  <controller name="c2" pages="0,,1," selected="0"/>
+  <displayList>
+    <image id="n1_g4wr" name="n1" src="g4wrj3" fileName="Images/refresh.png" xy="278,19" pivot="0.5,0.5" size="48,48" aspect="true" color="#639cbf">
+      <gearDisplay controller="c1" pages="1"/>
+      <relation target="n0_g4wr" sidePair="right-left"/>
+      <relation target="" sidePair="middle-middle"/>
+    </image>
+    <text id="n0_g4wr" name="title" xy="336,27" size="156,41" fontSize="30" color="#639cbf" text="Load more">
+      <gearDisplay controller="c2" pages="0"/>
+      <gearText controller="c1" pages="1" values="Loading..." default="Load more"/>
+      <relation target="" sidePair="center-center,middle-middle"/>
+    </text>
+    <text id="n2_qix0" name="hint" xy="351,26" size="126,42" fontSize="30" color="#639cbf" text="No more">
+      <gearDisplay controller="c2" pages="1"/>
+      <gearText controller="c1" pages="0,1" values="No more|Loading..."/>
+      <relation target="" sidePair="center-center,middle-middle"/>
+    </text>
+  </displayList>
+  <transition name="t0" autoPlay="true" autoPlayRepeat="-1">
+    <item time="0" type="Rotation" target="n1_g4wr" tween="true" startValue="0" endValue="-360" duration="24" ease="Linear"/>
+  </transition>
+</component>

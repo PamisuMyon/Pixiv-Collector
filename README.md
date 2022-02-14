@@ -3,7 +3,7 @@ Pixiv画作收集GUI，用于人工筛选画作，以构建特定范围的画作
 
 [Pixiv画作收集服务端](https://github.com/pmisu/Pixiv-Collector-Server)
 
-WIP: 目前仅有UI，毫无UX，BUG较多，未做优化，考虑重构中。
+WIP
 
 # 使用
 ## 设置
@@ -42,10 +42,6 @@ WIP: 目前仅有UI，毫无UX，BUG较多，未做优化，考虑重构中。
 # 感谢
 [PixivPy](https://github.com/upbit/pixivpy)
 
-[xLua](https://github.com/Tencent/xLua)
+[Puerts](https://github.com/Tencent/puerts)
 
-[Recyclable Scroll Rect](https://github.com/MdIqubal/Recyclable-Scroll-Rect)
-
-[Flexible Grid Layout](https://github.com/mohsinkhan26/flex-grid-layout)
-
-[Unity Asynchronous Image Loader](https://github.com/Looooong/UnityAsyncImageLoader)
+[fairygui-puerts-unity](https://github.com/fy0/fairygui-puerts-unity)

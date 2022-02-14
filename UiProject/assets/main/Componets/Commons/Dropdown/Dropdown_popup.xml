@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<component size="300,200">
+  <displayList>
+    <graph id="n0_aapx" name="n0" xy="0,0" size="300,200" touchable="false" type="rect" lineColor="#ff43748f" fillColor="#ff21353f" corner="8">
+      <relation target="" sidePair="width-width,height-height"/>
+    </graph>
+    <list id="n1_aapx" name="list" xy="0,0" size="300,200" overflow="scroll" defaultItem="ui://paw0rq8saapxjj" autoClearItems="true">
+      <relation target="" sidePair="width-width"/>
+      <item/>
+      <item/>
+      <item/>
+      <item/>
+    </list>
+  </displayList>
+  <relation target="n1_aapx" sidePair="height-height"/>
+</component>

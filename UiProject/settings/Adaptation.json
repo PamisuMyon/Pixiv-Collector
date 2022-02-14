@@ -1,0 +1,24 @@
+{
+  "scaleMode": "ConstantPixelSize",
+  "screenMathMode": "MatchWidthOrHeight",
+  "designResolutionX": 1280,
+  "designResolutionY": 800,
+  "devices": [
+    {
+      "name": "Win",
+      "resolutionX": 1920,
+      "resolutionY": 1080
+    },
+    {
+      "name": "Win1",
+      "resolutionX": 1280,
+      "resolutionY": 800
+    },
+    {
+      "name": "Win2",
+      "resolutionX": 1280,
+      "resolutionY": 720
+    }
+  ],
+  "fileName": "Adaptation"
+}

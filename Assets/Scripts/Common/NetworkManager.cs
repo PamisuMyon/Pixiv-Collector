@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Net;
@@ -8,7 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
 
-namespace PixivCollector
+namespace Pamisu.Common
 {
     public class RequestOption
     {
@@ -33,22 +33,24 @@ namespace PixivCollector
 
     public class NetworkManager
     {
-        static NetworkManager instance;
-        readonly static object locker = new object();
-
-        public static NetworkManager GetInstance()
+        private static NetworkManager instance;
+        private readonly static object locker = new object();
+        public static NetworkManager Instance
         {
-            if (instance == null)
+            get
             {
-                lock (locker)
+                if (instance == null)
                 {
-                    if (instance == null)
+                    lock (locker)
                     {
-                        instance = new NetworkManager();
+                        if (instance == null)
+                        {
+                            instance = new NetworkManager();
+                        }
                     }
                 }
+                return instance;
             }
-            return instance;
         }
 
         public NetworkManager()
@@ -57,17 +59,17 @@ namespace PixivCollector
                 throw new NotImplementedException("Instance already exists!");
         }
 
-        public async Task<RequestResult> Request(string url, RequestOption option = null, Action<RequestResult> onComplete = null)
+        public async Task<RequestResult> RequestAsync(string url, RequestOption option = null, Action<RequestResult> onComplete = null)
         {
             var result = await Task.Run(() =>
             {
-                return DoRequest(url, option);
+                return Request(url, option);
             });
             onComplete?.Invoke(result);
             return result;
         }
 
-        public RequestResult DoRequest(string url, RequestOption option = null)
+        public RequestResult Request(string url, RequestOption option = null)
         {
             RequestResult result = null;
             try

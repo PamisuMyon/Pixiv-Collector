@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<component size="92,22" anchor="true">
+  <displayList>
+    <graph id="n0_qvrv" name="n0" xy="0,0" size="92,22" type="rect" lineSize="0" corner="30">
+      <relation target="n1_qvrv" sidePair="width-width"/>
+      <relation target="" sidePair="width-width"/>
+    </graph>
+    <text id="n1_qvrv" name="title" xy="12,2" size="69,19" fontSize="12" color="#0e171e" align="center" vAlign="middle" text="TagTagTag">
+      <relation target="" sidePair="center-center"/>
+    </text>
+  </displayList>
+  <relation target="n0_qvrv" sidePair="width-width"/>
+  <customProperty target="title" propertyId="0"/>
+</component>

@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<component size="401,425" extention="Label" initName="frame" bgColor="#0e171e">
+  <displayList>
+    <component id="n0_mi4a" name="n0" src="mi4aj1" fileName="Componets/Commons/DialogBackground.xml" xy="-3,-5" size="404,430">
+      <relation target="n4_mi4a" sidePair="rightext-right,topext-top,bottomext-bottom,leftext-left"/>
+    </component>
+    <text id="n1_mi4a" name="n1" xy="18,13" size="239,44" group="n4_mi4a" fontSize="32" color="#639cbf" text="SETTINGS">
+      <relation target="" sidePair="left-left"/>
+    </text>
+    <text id="n2_mi4a" name="n2" xy="18,63" size="153,34" group="n4_mi4a" fontSize="24" color="#639cbf" text="Proxy">
+      <relation target="" sidePair="left-left"/>
+    </text>
+    <component id="n3_mi4a" name="ProxyInput" src="gzsdiq" fileName="Componets/Commons/InputField.xml" xy="18,103" size="365,46" group="n4_mi4a">
+      <relation target="" sidePair="width-width"/>
+    </component>
+    <text id="n5_mi4a" name="n5" xy="16,155" size="187,34" group="n4_mi4a" fontSize="24" color="#639cbf" text="Collector Server">
+      <relation target="" sidePair="left-left"/>
+    </text>
+    <component id="n6_mi4a" name="CollectorServerInput" src="gzsdiq" fileName="Componets/Commons/InputField.xml" xy="16,195" size="365,46" group="n4_mi4a">
+      <relation target="" sidePair="width-width"/>
+    </component>
+    <text id="n7_mi4a" name="n7" xy="16,247" size="297,34" group="n4_mi4a" fontSize="24" color="#639cbf" text="Pixiv API Request Interval">
+      <relation target="" sidePair="left-left"/>
+    </text>
+    <component id="n8_mi4a" name="RequestIntervalInput" src="gzsdiq" fileName="Componets/Commons/InputField.xml" xy="16,287" size="365,46" group="n4_mi4a">
+      <relation target="" sidePair="width-width"/>
+    </component>
+    <graph id="n12_mi4a" name="n12" xy="16,339" size="368,12" group="n4_mi4a" type="rect" lineSize="0" fillColor="#00ffffff"/>
+    <component id="n9_mi4a" name="CancelButton" src="gzsdiu" fileName="Componets/Commons/TextButton.xml" xy="16,358" size="176,48" group="n11_mi4a">
+      <relation target="" sidePair="middle-middle,left-left"/>
+      <Button title="CANCEL" titleFontSize="22"/>
+    </component>
+    <component id="n10_mi4a" name="ConfirmButton" src="gzsdiu" fileName="Componets/Commons/TextButton.xml" xy="205,357" size="176,48" group="n11_mi4a">
+      <relation target="" sidePair="middle-middle,right-right"/>
+      <Button title="CONFIRM" titleFontSize="22"/>
+    </component>
+    <group id="n11_mi4a" name="n11" xy="16,357" size="365,49" group="n4_mi4a" advanced="true">
+      <relation target="" sidePair="width-width"/>
+    </group>
+    <group id="n4_mi4a" name="n4" xy="16,13" size="368,393" advanced="true" layout="vt" lineGap="6" excludeInvisibles="true"/>
+  </displayList>
+</component>

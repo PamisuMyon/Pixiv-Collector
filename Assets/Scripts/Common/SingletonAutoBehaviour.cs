@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace PixivCollector
+namespace Pamisu.Common
 {
     public abstract class SingletonAutoBehaviour<T> : MonoBehaviour where T : MonoBehaviour
     {

@@ -1,0 +1,3941 @@
+var __defProp = Object.defineProperty;
+var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
+var __getOwnPropNames = Object.getOwnPropertyNames;
+var __hasOwnProp = Object.prototype.hasOwnProperty;
+var __defNormalProp = (obj, key, value) => key in obj ? __defProp(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __markAsModule = (target) => __defProp(target, "__esModule", { value: true });
+var __commonJS = (cb, mod) => function __require() {
+  return mod || (0, cb[__getOwnPropNames(cb)[0]])((mod = { exports: {} }).exports, mod), mod.exports;
+};
+var __export = (target, all) => {
+  for (var name in all)
+    __defProp(target, name, { get: all[name], enumerable: true });
+};
+var __reExport = (target, module2, copyDefault, desc) => {
+  if (module2 && typeof module2 === "object" || typeof module2 === "function") {
+    for (let key of __getOwnPropNames(module2))
+      if (!__hasOwnProp.call(target, key) && (copyDefault || key !== "default"))
+        __defProp(target, key, { get: () => module2[key], enumerable: !(desc = __getOwnPropDesc(module2, key)) || desc.enumerable });
+  }
+  return target;
+};
+var __toCommonJS = /* @__PURE__ */ ((cache) => {
+  return (module2, temp) => {
+    return cache && cache.get(module2) || (temp = __reExport(__markAsModule({}), module2, 1), cache && cache.set(module2, temp), temp);
+  };
+})(typeof WeakMap !== "undefined" ? /* @__PURE__ */ new WeakMap() : 0);
+var __publicField = (obj, key, value) => {
+  __defNormalProp(obj, typeof key !== "symbol" ? key + "" : key, value);
+  return value;
+};
+
+// node_modules/source-map/lib/base64.js
+var require_base64 = __commonJS({
+  "node_modules/source-map/lib/base64.js"(exports) {
+    var intToCharMap = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/".split("");
+    exports.encode = function(number) {
+      if (0 <= number && number < intToCharMap.length) {
+        return intToCharMap[number];
+      }
+      throw new TypeError("Must be between 0 and 63: " + number);
+    };
+    exports.decode = function(charCode) {
+      var bigA = 65;
+      var bigZ = 90;
+      var littleA = 97;
+      var littleZ = 122;
+      var zero = 48;
+      var nine = 57;
+      var plus = 43;
+      var slash = 47;
+      var littleOffset = 26;
+      var numberOffset = 52;
+      if (bigA <= charCode && charCode <= bigZ) {
+        return charCode - bigA;
+      }
+      if (littleA <= charCode && charCode <= littleZ) {
+        return charCode - littleA + littleOffset;
+      }
+      if (zero <= charCode && charCode <= nine) {
+        return charCode - zero + numberOffset;
+      }
+      if (charCode == plus) {
+        return 62;
+      }
+      if (charCode == slash) {
+        return 63;
+      }
+      return -1;
+    };
+  }
+});
+
+// node_modules/source-map/lib/base64-vlq.js
+var require_base64_vlq = __commonJS({
+  "node_modules/source-map/lib/base64-vlq.js"(exports) {
+    var base64 = require_base64();
+    var VLQ_BASE_SHIFT = 5;
+    var VLQ_BASE = 1 << VLQ_BASE_SHIFT;
+    var VLQ_BASE_MASK = VLQ_BASE - 1;
+    var VLQ_CONTINUATION_BIT = VLQ_BASE;
+    function toVLQSigned(aValue) {
+      return aValue < 0 ? (-aValue << 1) + 1 : (aValue << 1) + 0;
+    }
+    function fromVLQSigned(aValue) {
+      var isNegative = (aValue & 1) === 1;
+      var shifted = aValue >> 1;
+      return isNegative ? -shifted : shifted;
+    }
+    exports.encode = function base64VLQ_encode(aValue) {
+      var encoded = "";
+      var digit;
+      var vlq = toVLQSigned(aValue);
+      do {
+        digit = vlq & VLQ_BASE_MASK;
+        vlq >>>= VLQ_BASE_SHIFT;
+        if (vlq > 0) {
+          digit |= VLQ_CONTINUATION_BIT;
+        }
+        encoded += base64.encode(digit);
+      } while (vlq > 0);
+      return encoded;
+    };
+    exports.decode = function base64VLQ_decode(aStr, aIndex, aOutParam) {
+      var strLen = aStr.length;
+      var result = 0;
+      var shift = 0;
+      var continuation, digit;
+      do {
+        if (aIndex >= strLen) {
+          throw new Error("Expected more digits in base 64 VLQ value.");
+        }
+        digit = base64.decode(aStr.charCodeAt(aIndex++));
+        if (digit === -1) {
+          throw new Error("Invalid base64 digit: " + aStr.charAt(aIndex - 1));
+        }
+        continuation = !!(digit & VLQ_CONTINUATION_BIT);
+        digit &= VLQ_BASE_MASK;
+        result = result + (digit << shift);
+        shift += VLQ_BASE_SHIFT;
+      } while (continuation);
+      aOutParam.value = fromVLQSigned(result);
+      aOutParam.rest = aIndex;
+    };
+  }
+});
+
+// node_modules/source-map/lib/util.js
+var require_util = __commonJS({
+  "node_modules/source-map/lib/util.js"(exports) {
+    function getArg(aArgs, aName, aDefaultValue) {
+      if (aName in aArgs) {
+        return aArgs[aName];
+      } else if (arguments.length === 3) {
+        return aDefaultValue;
+      } else {
+        throw new Error('"' + aName + '" is a required argument.');
+      }
+    }
+    exports.getArg = getArg;
+    var urlRegexp = /^(?:([\w+\-.]+):)?\/\/(?:(\w+:\w+)@)?([\w.-]*)(?::(\d+))?(.*)$/;
+    var dataUrlRegexp = /^data:.+\,.+$/;
+    function urlParse(aUrl) {
+      var match = aUrl.match(urlRegexp);
+      if (!match) {
+        return null;
+      }
+      return {
+        scheme: match[1],
+        auth: match[2],
+        host: match[3],
+        port: match[4],
+        path: match[5]
+      };
+    }
+    exports.urlParse = urlParse;
+    function urlGenerate(aParsedUrl) {
+      var url = "";
+      if (aParsedUrl.scheme) {
+        url += aParsedUrl.scheme + ":";
+      }
+      url += "//";
+      if (aParsedUrl.auth) {
+        url += aParsedUrl.auth + "@";
+      }
+      if (aParsedUrl.host) {
+        url += aParsedUrl.host;
+      }
+      if (aParsedUrl.port) {
+        url += ":" + aParsedUrl.port;
+      }
+      if (aParsedUrl.path) {
+        url += aParsedUrl.path;
+      }
+      return url;
+    }
+    exports.urlGenerate = urlGenerate;
+    function normalize(aPath) {
+      var path = aPath;
+      var url = urlParse(aPath);
+      if (url) {
+        if (!url.path) {
+          return aPath;
+        }
+        path = url.path;
+      }
+      var isAbsolute = exports.isAbsolute(path);
+      var parts = path.split(/\/+/);
+      for (var part, up = 0, i = parts.length - 1; i >= 0; i--) {
+        part = parts[i];
+        if (part === ".") {
+          parts.splice(i, 1);
+        } else if (part === "..") {
+          up++;
+        } else if (up > 0) {
+          if (part === "") {
+            parts.splice(i + 1, up);
+            up = 0;
+          } else {
+            parts.splice(i, 2);
+            up--;
+          }
+        }
+      }
+      path = parts.join("/");
+      if (path === "") {
+        path = isAbsolute ? "/" : ".";
+      }
+      if (url) {
+        url.path = path;
+        return urlGenerate(url);
+      }
+      return path;
+    }
+    exports.normalize = normalize;
+    function join(aRoot, aPath) {
+      if (aRoot === "") {
+        aRoot = ".";
+      }
+      if (aPath === "") {
+        aPath = ".";
+      }
+      var aPathUrl = urlParse(aPath);
+      var aRootUrl = urlParse(aRoot);
+      if (aRootUrl) {
+        aRoot = aRootUrl.path || "/";
+      }
+      if (aPathUrl && !aPathUrl.scheme) {
+        if (aRootUrl) {
+          aPathUrl.scheme = aRootUrl.scheme;
+        }
+        return urlGenerate(aPathUrl);
+      }
+      if (aPathUrl || aPath.match(dataUrlRegexp)) {
+        return aPath;
+      }
+      if (aRootUrl && !aRootUrl.host && !aRootUrl.path) {
+        aRootUrl.host = aPath;
+        return urlGenerate(aRootUrl);
+      }
+      var joined = aPath.charAt(0) === "/" ? aPath : normalize(aRoot.replace(/\/+$/, "") + "/" + aPath);
+      if (aRootUrl) {
+        aRootUrl.path = joined;
+        return urlGenerate(aRootUrl);
+      }
+      return joined;
+    }
+    exports.join = join;
+    exports.isAbsolute = function(aPath) {
+      return aPath.charAt(0) === "/" || urlRegexp.test(aPath);
+    };
+    function relative(aRoot, aPath) {
+      if (aRoot === "") {
+        aRoot = ".";
+      }
+      aRoot = aRoot.replace(/\/$/, "");
+      var level = 0;
+      while (aPath.indexOf(aRoot + "/") !== 0) {
+        var index = aRoot.lastIndexOf("/");
+        if (index < 0) {
+          return aPath;
+        }
+        aRoot = aRoot.slice(0, index);
+        if (aRoot.match(/^([^\/]+:\/)?\/*$/)) {
+          return aPath;
+        }
+        ++level;
+      }
+      return Array(level + 1).join("../") + aPath.substr(aRoot.length + 1);
+    }
+    exports.relative = relative;
+    var supportsNullProto = function() {
+      var obj = /* @__PURE__ */ Object.create(null);
+      return !("__proto__" in obj);
+    }();
+    function identity(s) {
+      return s;
+    }
+    function toSetString(aStr) {
+      if (isProtoString(aStr)) {
+        return "$" + aStr;
+      }
+      return aStr;
+    }
+    exports.toSetString = supportsNullProto ? identity : toSetString;
+    function fromSetString(aStr) {
+      if (isProtoString(aStr)) {
+        return aStr.slice(1);
+      }
+      return aStr;
+    }
+    exports.fromSetString = supportsNullProto ? identity : fromSetString;
+    function isProtoString(s) {
+      if (!s) {
+        return false;
+      }
+      var length = s.length;
+      if (length < 9) {
+        return false;
+      }
+      if (s.charCodeAt(length - 1) !== 95 || s.charCodeAt(length - 2) !== 95 || s.charCodeAt(length - 3) !== 111 || s.charCodeAt(length - 4) !== 116 || s.charCodeAt(length - 5) !== 111 || s.charCodeAt(length - 6) !== 114 || s.charCodeAt(length - 7) !== 112 || s.charCodeAt(length - 8) !== 95 || s.charCodeAt(length - 9) !== 95) {
+        return false;
+      }
+      for (var i = length - 10; i >= 0; i--) {
+        if (s.charCodeAt(i) !== 36) {
+          return false;
+        }
+      }
+      return true;
+    }
+    function compareByOriginalPositions(mappingA, mappingB, onlyCompareOriginal) {
+      var cmp = strcmp(mappingA.source, mappingB.source);
+      if (cmp !== 0) {
+        return cmp;
+      }
+      cmp = mappingA.originalLine - mappingB.originalLine;
+      if (cmp !== 0) {
+        return cmp;
+      }
+      cmp = mappingA.originalColumn - mappingB.originalColumn;
+      if (cmp !== 0 || onlyCompareOriginal) {
+        return cmp;
+      }
+      cmp = mappingA.generatedColumn - mappingB.generatedColumn;
+      if (cmp !== 0) {
+        return cmp;
+      }
+      cmp = mappingA.generatedLine - mappingB.generatedLine;
+      if (cmp !== 0) {
+        return cmp;
+      }
+      return strcmp(mappingA.name, mappingB.name);
+    }
+    exports.compareByOriginalPositions = compareByOriginalPositions;
+    function compareByGeneratedPositionsDeflated(mappingA, mappingB, onlyCompareGenerated) {
+      var cmp = mappingA.generatedLine - mappingB.generatedLine;
+      if (cmp !== 0) {
+        return cmp;
+      }
+      cmp = mappingA.generatedColumn - mappingB.generatedColumn;
+      if (cmp !== 0 || onlyCompareGenerated) {
+        return cmp;
+      }
+      cmp = strcmp(mappingA.source, mappingB.source);
+      if (cmp !== 0) {
+        return cmp;
+      }
+      cmp = mappingA.originalLine - mappingB.originalLine;
+      if (cmp !== 0) {
+        return cmp;
+      }
+      cmp = mappingA.originalColumn - mappingB.originalColumn;
+      if (cmp !== 0) {
+        return cmp;
+      }
+      return strcmp(mappingA.name, mappingB.name);
+    }
+    exports.compareByGeneratedPositionsDeflated = compareByGeneratedPositionsDeflated;
+    function strcmp(aStr1, aStr2) {
+      if (aStr1 === aStr2) {
+        return 0;
+      }
+      if (aStr1 === null) {
+        return 1;
+      }
+      if (aStr2 === null) {
+        return -1;
+      }
+      if (aStr1 > aStr2) {
+        return 1;
+      }
+      return -1;
+    }
+    function compareByGeneratedPositionsInflated(mappingA, mappingB) {
+      var cmp = mappingA.generatedLine - mappingB.generatedLine;
+      if (cmp !== 0) {
+        return cmp;
+      }
+      cmp = mappingA.generatedColumn - mappingB.generatedColumn;
+      if (cmp !== 0) {
+        return cmp;
+      }
+      cmp = strcmp(mappingA.source, mappingB.source);
+      if (cmp !== 0) {
+        return cmp;
+      }
+      cmp = mappingA.originalLine - mappingB.originalLine;
+      if (cmp !== 0) {
+        return cmp;
+      }
+      cmp = mappingA.originalColumn - mappingB.originalColumn;
+      if (cmp !== 0) {
+        return cmp;
+      }
+      return strcmp(mappingA.name, mappingB.name);
+    }
+    exports.compareByGeneratedPositionsInflated = compareByGeneratedPositionsInflated;
+    function parseSourceMapInput(str) {
+      return JSON.parse(str.replace(/^\)]}'[^\n]*\n/, ""));
+    }
+    exports.parseSourceMapInput = parseSourceMapInput;
+    function computeSourceURL(sourceRoot, sourceURL, sourceMapURL) {
+      sourceURL = sourceURL || "";
+      if (sourceRoot) {
+        if (sourceRoot[sourceRoot.length - 1] !== "/" && sourceURL[0] !== "/") {
+          sourceRoot += "/";
+        }
+        sourceURL = sourceRoot + sourceURL;
+      }
+      if (sourceMapURL) {
+        var parsed = urlParse(sourceMapURL);
+        if (!parsed) {
+          throw new Error("sourceMapURL could not be parsed");
+        }
+        if (parsed.path) {
+          var index = parsed.path.lastIndexOf("/");
+          if (index >= 0) {
+            parsed.path = parsed.path.substring(0, index + 1);
+          }
+        }
+        sourceURL = join(urlGenerate(parsed), sourceURL);
+      }
+      return normalize(sourceURL);
+    }
+    exports.computeSourceURL = computeSourceURL;
+  }
+});
+
+// node_modules/source-map/lib/array-set.js
+var require_array_set = __commonJS({
+  "node_modules/source-map/lib/array-set.js"(exports) {
+    var util = require_util();
+    var has = Object.prototype.hasOwnProperty;
+    var hasNativeMap = typeof Map !== "undefined";
+    function ArraySet() {
+      this._array = [];
+      this._set = hasNativeMap ? /* @__PURE__ */ new Map() : /* @__PURE__ */ Object.create(null);
+    }
+    ArraySet.fromArray = function ArraySet_fromArray(aArray, aAllowDuplicates) {
+      var set = new ArraySet();
+      for (var i = 0, len = aArray.length; i < len; i++) {
+        set.add(aArray[i], aAllowDuplicates);
+      }
+      return set;
+    };
+    ArraySet.prototype.size = function ArraySet_size() {
+      return hasNativeMap ? this._set.size : Object.getOwnPropertyNames(this._set).length;
+    };
+    ArraySet.prototype.add = function ArraySet_add(aStr, aAllowDuplicates) {
+      var sStr = hasNativeMap ? aStr : util.toSetString(aStr);
+      var isDuplicate = hasNativeMap ? this.has(aStr) : has.call(this._set, sStr);
+      var idx = this._array.length;
+      if (!isDuplicate || aAllowDuplicates) {
+        this._array.push(aStr);
+      }
+      if (!isDuplicate) {
+        if (hasNativeMap) {
+          this._set.set(aStr, idx);
+        } else {
+          this._set[sStr] = idx;
+        }
+      }
+    };
+    ArraySet.prototype.has = function ArraySet_has(aStr) {
+      if (hasNativeMap) {
+        return this._set.has(aStr);
+      } else {
+        var sStr = util.toSetString(aStr);
+        return has.call(this._set, sStr);
+      }
+    };
+    ArraySet.prototype.indexOf = function ArraySet_indexOf(aStr) {
+      if (hasNativeMap) {
+        var idx = this._set.get(aStr);
+        if (idx >= 0) {
+          return idx;
+        }
+      } else {
+        var sStr = util.toSetString(aStr);
+        if (has.call(this._set, sStr)) {
+          return this._set[sStr];
+        }
+      }
+      throw new Error('"' + aStr + '" is not in the set.');
+    };
+    ArraySet.prototype.at = function ArraySet_at(aIdx) {
+      if (aIdx >= 0 && aIdx < this._array.length) {
+        return this._array[aIdx];
+      }
+      throw new Error("No element indexed by " + aIdx);
+    };
+    ArraySet.prototype.toArray = function ArraySet_toArray() {
+      return this._array.slice();
+    };
+    exports.ArraySet = ArraySet;
+  }
+});
+
+// node_modules/source-map/lib/mapping-list.js
+var require_mapping_list = __commonJS({
+  "node_modules/source-map/lib/mapping-list.js"(exports) {
+    var util = require_util();
+    function generatedPositionAfter(mappingA, mappingB) {
+      var lineA = mappingA.generatedLine;
+      var lineB = mappingB.generatedLine;
+      var columnA = mappingA.generatedColumn;
+      var columnB = mappingB.generatedColumn;
+      return lineB > lineA || lineB == lineA && columnB >= columnA || util.compareByGeneratedPositionsInflated(mappingA, mappingB) <= 0;
+    }
+    function MappingList() {
+      this._array = [];
+      this._sorted = true;
+      this._last = { generatedLine: -1, generatedColumn: 0 };
+    }
+    MappingList.prototype.unsortedForEach = function MappingList_forEach(aCallback, aThisArg) {
+      this._array.forEach(aCallback, aThisArg);
+    };
+    MappingList.prototype.add = function MappingList_add(aMapping) {
+      if (generatedPositionAfter(this._last, aMapping)) {
+        this._last = aMapping;
+        this._array.push(aMapping);
+      } else {
+        this._sorted = false;
+        this._array.push(aMapping);
+      }
+    };
+    MappingList.prototype.toArray = function MappingList_toArray() {
+      if (!this._sorted) {
+        this._array.sort(util.compareByGeneratedPositionsInflated);
+        this._sorted = true;
+      }
+      return this._array;
+    };
+    exports.MappingList = MappingList;
+  }
+});
+
+// node_modules/source-map/lib/source-map-generator.js
+var require_source_map_generator = __commonJS({
+  "node_modules/source-map/lib/source-map-generator.js"(exports) {
+    var base64VLQ = require_base64_vlq();
+    var util = require_util();
+    var ArraySet = require_array_set().ArraySet;
+    var MappingList = require_mapping_list().MappingList;
+    function SourceMapGenerator(aArgs) {
+      if (!aArgs) {
+        aArgs = {};
+      }
+      this._file = util.getArg(aArgs, "file", null);
+      this._sourceRoot = util.getArg(aArgs, "sourceRoot", null);
+      this._skipValidation = util.getArg(aArgs, "skipValidation", false);
+      this._sources = new ArraySet();
+      this._names = new ArraySet();
+      this._mappings = new MappingList();
+      this._sourcesContents = null;
+    }
+    SourceMapGenerator.prototype._version = 3;
+    SourceMapGenerator.fromSourceMap = function SourceMapGenerator_fromSourceMap(aSourceMapConsumer) {
+      var sourceRoot = aSourceMapConsumer.sourceRoot;
+      var generator = new SourceMapGenerator({
+        file: aSourceMapConsumer.file,
+        sourceRoot
+      });
+      aSourceMapConsumer.eachMapping(function(mapping) {
+        var newMapping = {
+          generated: {
+            line: mapping.generatedLine,
+            column: mapping.generatedColumn
+          }
+        };
+        if (mapping.source != null) {
+          newMapping.source = mapping.source;
+          if (sourceRoot != null) {
+            newMapping.source = util.relative(sourceRoot, newMapping.source);
+          }
+          newMapping.original = {
+            line: mapping.originalLine,
+            column: mapping.originalColumn
+          };
+          if (mapping.name != null) {
+            newMapping.name = mapping.name;
+          }
+        }
+        generator.addMapping(newMapping);
+      });
+      aSourceMapConsumer.sources.forEach(function(sourceFile) {
+        var sourceRelative = sourceFile;
+        if (sourceRoot !== null) {
+          sourceRelative = util.relative(sourceRoot, sourceFile);
+        }
+        if (!generator._sources.has(sourceRelative)) {
+          generator._sources.add(sourceRelative);
+        }
+        var content = aSourceMapConsumer.sourceContentFor(sourceFile);
+        if (content != null) {
+          generator.setSourceContent(sourceFile, content);
+        }
+      });
+      return generator;
+    };
+    SourceMapGenerator.prototype.addMapping = function SourceMapGenerator_addMapping(aArgs) {
+      var generated = util.getArg(aArgs, "generated");
+      var original = util.getArg(aArgs, "original", null);
+      var source = util.getArg(aArgs, "source", null);
+      var name = util.getArg(aArgs, "name", null);
+      if (!this._skipValidation) {
+        this._validateMapping(generated, original, source, name);
+      }
+      if (source != null) {
+        source = String(source);
+        if (!this._sources.has(source)) {
+          this._sources.add(source);
+        }
+      }
+      if (name != null) {
+        name = String(name);
+        if (!this._names.has(name)) {
+          this._names.add(name);
+        }
+      }
+      this._mappings.add({
+        generatedLine: generated.line,
+        generatedColumn: generated.column,
+        originalLine: original != null && original.line,
+        originalColumn: original != null && original.column,
+        source,
+        name
+      });
+    };
+    SourceMapGenerator.prototype.setSourceContent = function SourceMapGenerator_setSourceContent(aSourceFile, aSourceContent) {
+      var source = aSourceFile;
+      if (this._sourceRoot != null) {
+        source = util.relative(this._sourceRoot, source);
+      }
+      if (aSourceContent != null) {
+        if (!this._sourcesContents) {
+          this._sourcesContents = /* @__PURE__ */ Object.create(null);
+        }
+        this._sourcesContents[util.toSetString(source)] = aSourceContent;
+      } else if (this._sourcesContents) {
+        delete this._sourcesContents[util.toSetString(source)];
+        if (Object.keys(this._sourcesContents).length === 0) {
+          this._sourcesContents = null;
+        }
+      }
+    };
+    SourceMapGenerator.prototype.applySourceMap = function SourceMapGenerator_applySourceMap(aSourceMapConsumer, aSourceFile, aSourceMapPath) {
+      var sourceFile = aSourceFile;
+      if (aSourceFile == null) {
+        if (aSourceMapConsumer.file == null) {
+          throw new Error(`SourceMapGenerator.prototype.applySourceMap requires either an explicit source file, or the source map's "file" property. Both were omitted.`);
+        }
+        sourceFile = aSourceMapConsumer.file;
+      }
+      var sourceRoot = this._sourceRoot;
+      if (sourceRoot != null) {
+        sourceFile = util.relative(sourceRoot, sourceFile);
+      }
+      var newSources = new ArraySet();
+      var newNames = new ArraySet();
+      this._mappings.unsortedForEach(function(mapping) {
+        if (mapping.source === sourceFile && mapping.originalLine != null) {
+          var original = aSourceMapConsumer.originalPositionFor({
+            line: mapping.originalLine,
+            column: mapping.originalColumn
+          });
+          if (original.source != null) {
+            mapping.source = original.source;
+            if (aSourceMapPath != null) {
+              mapping.source = util.join(aSourceMapPath, mapping.source);
+            }
+            if (sourceRoot != null) {
+              mapping.source = util.relative(sourceRoot, mapping.source);
+            }
+            mapping.originalLine = original.line;
+            mapping.originalColumn = original.column;
+            if (original.name != null) {
+              mapping.name = original.name;
+            }
+          }
+        }
+        var source = mapping.source;
+        if (source != null && !newSources.has(source)) {
+          newSources.add(source);
+        }
+        var name = mapping.name;
+        if (name != null && !newNames.has(name)) {
+          newNames.add(name);
+        }
+      }, this);
+      this._sources = newSources;
+      this._names = newNames;
+      aSourceMapConsumer.sources.forEach(function(sourceFile2) {
+        var content = aSourceMapConsumer.sourceContentFor(sourceFile2);
+        if (content != null) {
+          if (aSourceMapPath != null) {
+            sourceFile2 = util.join(aSourceMapPath, sourceFile2);
+          }
+          if (sourceRoot != null) {
+            sourceFile2 = util.relative(sourceRoot, sourceFile2);
+          }
+          this.setSourceContent(sourceFile2, content);
+        }
+      }, this);
+    };
+    SourceMapGenerator.prototype._validateMapping = function SourceMapGenerator_validateMapping(aGenerated, aOriginal, aSource, aName) {
+      if (aOriginal && typeof aOriginal.line !== "number" && typeof aOriginal.column !== "number") {
+        throw new Error("original.line and original.column are not numbers -- you probably meant to omit the original mapping entirely and only map the generated position. If so, pass null for the original mapping instead of an object with empty or null values.");
+      }
+      if (aGenerated && "line" in aGenerated && "column" in aGenerated && aGenerated.line > 0 && aGenerated.column >= 0 && !aOriginal && !aSource && !aName) {
+        return;
+      } else if (aGenerated && "line" in aGenerated && "column" in aGenerated && aOriginal && "line" in aOriginal && "column" in aOriginal && aGenerated.line > 0 && aGenerated.column >= 0 && aOriginal.line > 0 && aOriginal.column >= 0 && aSource) {
+        return;
+      } else {
+        throw new Error("Invalid mapping: " + JSON.stringify({
+          generated: aGenerated,
+          source: aSource,
+          original: aOriginal,
+          name: aName
+        }));
+      }
+    };
+    SourceMapGenerator.prototype._serializeMappings = function SourceMapGenerator_serializeMappings() {
+      var previousGeneratedColumn = 0;
+      var previousGeneratedLine = 1;
+      var previousOriginalColumn = 0;
+      var previousOriginalLine = 0;
+      var previousName = 0;
+      var previousSource = 0;
+      var result = "";
+      var next;
+      var mapping;
+      var nameIdx;
+      var sourceIdx;
+      var mappings = this._mappings.toArray();
+      for (var i = 0, len = mappings.length; i < len; i++) {
+        mapping = mappings[i];
+        next = "";
+        if (mapping.generatedLine !== previousGeneratedLine) {
+          previousGeneratedColumn = 0;
+          while (mapping.generatedLine !== previousGeneratedLine) {
+            next += ";";
+            previousGeneratedLine++;
+          }
+        } else {
+          if (i > 0) {
+            if (!util.compareByGeneratedPositionsInflated(mapping, mappings[i - 1])) {
+              continue;
+            }
+            next += ",";
+          }
+        }
+        next += base64VLQ.encode(mapping.generatedColumn - previousGeneratedColumn);
+        previousGeneratedColumn = mapping.generatedColumn;
+        if (mapping.source != null) {
+          sourceIdx = this._sources.indexOf(mapping.source);
+          next += base64VLQ.encode(sourceIdx - previousSource);
+          previousSource = sourceIdx;
+          next += base64VLQ.encode(mapping.originalLine - 1 - previousOriginalLine);
+          previousOriginalLine = mapping.originalLine - 1;
+          next += base64VLQ.encode(mapping.originalColumn - previousOriginalColumn);
+          previousOriginalColumn = mapping.originalColumn;
+          if (mapping.name != null) {
+            nameIdx = this._names.indexOf(mapping.name);
+            next += base64VLQ.encode(nameIdx - previousName);
+            previousName = nameIdx;
+          }
+        }
+        result += next;
+      }
+      return result;
+    };
+    SourceMapGenerator.prototype._generateSourcesContent = function SourceMapGenerator_generateSourcesContent(aSources, aSourceRoot) {
+      return aSources.map(function(source) {
+        if (!this._sourcesContents) {
+          return null;
+        }
+        if (aSourceRoot != null) {
+          source = util.relative(aSourceRoot, source);
+        }
+        var key = util.toSetString(source);
+        return Object.prototype.hasOwnProperty.call(this._sourcesContents, key) ? this._sourcesContents[key] : null;
+      }, this);
+    };
+    SourceMapGenerator.prototype.toJSON = function SourceMapGenerator_toJSON() {
+      var map = {
+        version: this._version,
+        sources: this._sources.toArray(),
+        names: this._names.toArray(),
+        mappings: this._serializeMappings()
+      };
+      if (this._file != null) {
+        map.file = this._file;
+      }
+      if (this._sourceRoot != null) {
+        map.sourceRoot = this._sourceRoot;
+      }
+      if (this._sourcesContents) {
+        map.sourcesContent = this._generateSourcesContent(map.sources, map.sourceRoot);
+      }
+      return map;
+    };
+    SourceMapGenerator.prototype.toString = function SourceMapGenerator_toString() {
+      return JSON.stringify(this.toJSON());
+    };
+    exports.SourceMapGenerator = SourceMapGenerator;
+  }
+});
+
+// node_modules/source-map/lib/binary-search.js
+var require_binary_search = __commonJS({
+  "node_modules/source-map/lib/binary-search.js"(exports) {
+    exports.GREATEST_LOWER_BOUND = 1;
+    exports.LEAST_UPPER_BOUND = 2;
+    function recursiveSearch(aLow, aHigh, aNeedle, aHaystack, aCompare, aBias) {
+      var mid = Math.floor((aHigh - aLow) / 2) + aLow;
+      var cmp = aCompare(aNeedle, aHaystack[mid], true);
+      if (cmp === 0) {
+        return mid;
+      } else if (cmp > 0) {
+        if (aHigh - mid > 1) {
+          return recursiveSearch(mid, aHigh, aNeedle, aHaystack, aCompare, aBias);
+        }
+        if (aBias == exports.LEAST_UPPER_BOUND) {
+          return aHigh < aHaystack.length ? aHigh : -1;
+        } else {
+          return mid;
+        }
+      } else {
+        if (mid - aLow > 1) {
+          return recursiveSearch(aLow, mid, aNeedle, aHaystack, aCompare, aBias);
+        }
+        if (aBias == exports.LEAST_UPPER_BOUND) {
+          return mid;
+        } else {
+          return aLow < 0 ? -1 : aLow;
+        }
+      }
+    }
+    exports.search = function search(aNeedle, aHaystack, aCompare, aBias) {
+      if (aHaystack.length === 0) {
+        return -1;
+      }
+      var index = recursiveSearch(-1, aHaystack.length, aNeedle, aHaystack, aCompare, aBias || exports.GREATEST_LOWER_BOUND);
+      if (index < 0) {
+        return -1;
+      }
+      while (index - 1 >= 0) {
+        if (aCompare(aHaystack[index], aHaystack[index - 1], true) !== 0) {
+          break;
+        }
+        --index;
+      }
+      return index;
+    };
+  }
+});
+
+// node_modules/source-map/lib/quick-sort.js
+var require_quick_sort = __commonJS({
+  "node_modules/source-map/lib/quick-sort.js"(exports) {
+    function swap(ary, x, y) {
+      var temp = ary[x];
+      ary[x] = ary[y];
+      ary[y] = temp;
+    }
+    function randomIntInRange(low, high) {
+      return Math.round(low + Math.random() * (high - low));
+    }
+    function doQuickSort(ary, comparator, p, r) {
+      if (p < r) {
+        var pivotIndex = randomIntInRange(p, r);
+        var i = p - 1;
+        swap(ary, pivotIndex, r);
+        var pivot = ary[r];
+        for (var j = p; j < r; j++) {
+          if (comparator(ary[j], pivot) <= 0) {
+            i += 1;
+            swap(ary, i, j);
+          }
+        }
+        swap(ary, i + 1, j);
+        var q = i + 1;
+        doQuickSort(ary, comparator, p, q - 1);
+        doQuickSort(ary, comparator, q + 1, r);
+      }
+    }
+    exports.quickSort = function(ary, comparator) {
+      doQuickSort(ary, comparator, 0, ary.length - 1);
+    };
+  }
+});
+
+// node_modules/source-map/lib/source-map-consumer.js
+var require_source_map_consumer = __commonJS({
+  "node_modules/source-map/lib/source-map-consumer.js"(exports) {
+    var util = require_util();
+    var binarySearch = require_binary_search();
+    var ArraySet = require_array_set().ArraySet;
+    var base64VLQ = require_base64_vlq();
+    var quickSort = require_quick_sort().quickSort;
+    function SourceMapConsumer(aSourceMap, aSourceMapURL) {
+      var sourceMap = aSourceMap;
+      if (typeof aSourceMap === "string") {
+        sourceMap = util.parseSourceMapInput(aSourceMap);
+      }
+      return sourceMap.sections != null ? new IndexedSourceMapConsumer(sourceMap, aSourceMapURL) : new BasicSourceMapConsumer(sourceMap, aSourceMapURL);
+    }
+    SourceMapConsumer.fromSourceMap = function(aSourceMap, aSourceMapURL) {
+      return BasicSourceMapConsumer.fromSourceMap(aSourceMap, aSourceMapURL);
+    };
+    SourceMapConsumer.prototype._version = 3;
+    SourceMapConsumer.prototype.__generatedMappings = null;
+    Object.defineProperty(SourceMapConsumer.prototype, "_generatedMappings", {
+      configurable: true,
+      enumerable: true,
+      get: function() {
+        if (!this.__generatedMappings) {
+          this._parseMappings(this._mappings, this.sourceRoot);
+        }
+        return this.__generatedMappings;
+      }
+    });
+    SourceMapConsumer.prototype.__originalMappings = null;
+    Object.defineProperty(SourceMapConsumer.prototype, "_originalMappings", {
+      configurable: true,
+      enumerable: true,
+      get: function() {
+        if (!this.__originalMappings) {
+          this._parseMappings(this._mappings, this.sourceRoot);
+        }
+        return this.__originalMappings;
+      }
+    });
+    SourceMapConsumer.prototype._charIsMappingSeparator = function SourceMapConsumer_charIsMappingSeparator(aStr, index) {
+      var c = aStr.charAt(index);
+      return c === ";" || c === ",";
+    };
+    SourceMapConsumer.prototype._parseMappings = function SourceMapConsumer_parseMappings(aStr, aSourceRoot) {
+      throw new Error("Subclasses must implement _parseMappings");
+    };
+    SourceMapConsumer.GENERATED_ORDER = 1;
+    SourceMapConsumer.ORIGINAL_ORDER = 2;
+    SourceMapConsumer.GREATEST_LOWER_BOUND = 1;
+    SourceMapConsumer.LEAST_UPPER_BOUND = 2;
+    SourceMapConsumer.prototype.eachMapping = function SourceMapConsumer_eachMapping(aCallback, aContext, aOrder) {
+      var context = aContext || null;
+      var order = aOrder || SourceMapConsumer.GENERATED_ORDER;
+      var mappings;
+      switch (order) {
+        case SourceMapConsumer.GENERATED_ORDER:
+          mappings = this._generatedMappings;
+          break;
+        case SourceMapConsumer.ORIGINAL_ORDER:
+          mappings = this._originalMappings;
+          break;
+        default:
+          throw new Error("Unknown order of iteration.");
+      }
+      var sourceRoot = this.sourceRoot;
+      mappings.map(function(mapping) {
+        var source = mapping.source === null ? null : this._sources.at(mapping.source);
+        source = util.computeSourceURL(sourceRoot, source, this._sourceMapURL);
+        return {
+          source,
+          generatedLine: mapping.generatedLine,
+          generatedColumn: mapping.generatedColumn,
+          originalLine: mapping.originalLine,
+          originalColumn: mapping.originalColumn,
+          name: mapping.name === null ? null : this._names.at(mapping.name)
+        };
+      }, this).forEach(aCallback, context);
+    };
+    SourceMapConsumer.prototype.allGeneratedPositionsFor = function SourceMapConsumer_allGeneratedPositionsFor(aArgs) {
+      var line = util.getArg(aArgs, "line");
+      var needle = {
+        source: util.getArg(aArgs, "source"),
+        originalLine: line,
+        originalColumn: util.getArg(aArgs, "column", 0)
+      };
+      needle.source = this._findSourceIndex(needle.source);
+      if (needle.source < 0) {
+        return [];
+      }
+      var mappings = [];
+      var index = this._findMapping(needle, this._originalMappings, "originalLine", "originalColumn", util.compareByOriginalPositions, binarySearch.LEAST_UPPER_BOUND);
+      if (index >= 0) {
+        var mapping = this._originalMappings[index];
+        if (aArgs.column === void 0) {
+          var originalLine = mapping.originalLine;
+          while (mapping && mapping.originalLine === originalLine) {
+            mappings.push({
+              line: util.getArg(mapping, "generatedLine", null),
+              column: util.getArg(mapping, "generatedColumn", null),
+              lastColumn: util.getArg(mapping, "lastGeneratedColumn", null)
+            });
+            mapping = this._originalMappings[++index];
+          }
+        } else {
+          var originalColumn = mapping.originalColumn;
+          while (mapping && mapping.originalLine === line && mapping.originalColumn == originalColumn) {
+            mappings.push({
+              line: util.getArg(mapping, "generatedLine", null),
+              column: util.getArg(mapping, "generatedColumn", null),
+              lastColumn: util.getArg(mapping, "lastGeneratedColumn", null)
+            });
+            mapping = this._originalMappings[++index];
+          }
+        }
+      }
+      return mappings;
+    };
+    exports.SourceMapConsumer = SourceMapConsumer;
+    function BasicSourceMapConsumer(aSourceMap, aSourceMapURL) {
+      var sourceMap = aSourceMap;
+      if (typeof aSourceMap === "string") {
+        sourceMap = util.parseSourceMapInput(aSourceMap);
+      }
+      var version = util.getArg(sourceMap, "version");
+      var sources = util.getArg(sourceMap, "sources");
+      var names = util.getArg(sourceMap, "names", []);
+      var sourceRoot = util.getArg(sourceMap, "sourceRoot", null);
+      var sourcesContent = util.getArg(sourceMap, "sourcesContent", null);
+      var mappings = util.getArg(sourceMap, "mappings");
+      var file = util.getArg(sourceMap, "file", null);
+      if (version != this._version) {
+        throw new Error("Unsupported version: " + version);
+      }
+      if (sourceRoot) {
+        sourceRoot = util.normalize(sourceRoot);
+      }
+      sources = sources.map(String).map(util.normalize).map(function(source) {
+        return sourceRoot && util.isAbsolute(sourceRoot) && util.isAbsolute(source) ? util.relative(sourceRoot, source) : source;
+      });
+      this._names = ArraySet.fromArray(names.map(String), true);
+      this._sources = ArraySet.fromArray(sources, true);
+      this._absoluteSources = this._sources.toArray().map(function(s) {
+        return util.computeSourceURL(sourceRoot, s, aSourceMapURL);
+      });
+      this.sourceRoot = sourceRoot;
+      this.sourcesContent = sourcesContent;
+      this._mappings = mappings;
+      this._sourceMapURL = aSourceMapURL;
+      this.file = file;
+    }
+    BasicSourceMapConsumer.prototype = Object.create(SourceMapConsumer.prototype);
+    BasicSourceMapConsumer.prototype.consumer = SourceMapConsumer;
+    BasicSourceMapConsumer.prototype._findSourceIndex = function(aSource) {
+      var relativeSource = aSource;
+      if (this.sourceRoot != null) {
+        relativeSource = util.relative(this.sourceRoot, relativeSource);
+      }
+      if (this._sources.has(relativeSource)) {
+        return this._sources.indexOf(relativeSource);
+      }
+      var i;
+      for (i = 0; i < this._absoluteSources.length; ++i) {
+        if (this._absoluteSources[i] == aSource) {
+          return i;
+        }
+      }
+      return -1;
+    };
+    BasicSourceMapConsumer.fromSourceMap = function SourceMapConsumer_fromSourceMap(aSourceMap, aSourceMapURL) {
+      var smc = Object.create(BasicSourceMapConsumer.prototype);
+      var names = smc._names = ArraySet.fromArray(aSourceMap._names.toArray(), true);
+      var sources = smc._sources = ArraySet.fromArray(aSourceMap._sources.toArray(), true);
+      smc.sourceRoot = aSourceMap._sourceRoot;
+      smc.sourcesContent = aSourceMap._generateSourcesContent(smc._sources.toArray(), smc.sourceRoot);
+      smc.file = aSourceMap._file;
+      smc._sourceMapURL = aSourceMapURL;
+      smc._absoluteSources = smc._sources.toArray().map(function(s) {
+        return util.computeSourceURL(smc.sourceRoot, s, aSourceMapURL);
+      });
+      var generatedMappings = aSourceMap._mappings.toArray().slice();
+      var destGeneratedMappings = smc.__generatedMappings = [];
+      var destOriginalMappings = smc.__originalMappings = [];
+      for (var i = 0, length = generatedMappings.length; i < length; i++) {
+        var srcMapping = generatedMappings[i];
+        var destMapping = new Mapping();
+        destMapping.generatedLine = srcMapping.generatedLine;
+        destMapping.generatedColumn = srcMapping.generatedColumn;
+        if (srcMapping.source) {
+          destMapping.source = sources.indexOf(srcMapping.source);
+          destMapping.originalLine = srcMapping.originalLine;
+          destMapping.originalColumn = srcMapping.originalColumn;
+          if (srcMapping.name) {
+            destMapping.name = names.indexOf(srcMapping.name);
+          }
+          destOriginalMappings.push(destMapping);
+        }
+        destGeneratedMappings.push(destMapping);
+      }
+      quickSort(smc.__originalMappings, util.compareByOriginalPositions);
+      return smc;
+    };
+    BasicSourceMapConsumer.prototype._version = 3;
+    Object.defineProperty(BasicSourceMapConsumer.prototype, "sources", {
+      get: function() {
+        return this._absoluteSources.slice();
+      }
+    });
+    function Mapping() {
+      this.generatedLine = 0;
+      this.generatedColumn = 0;
+      this.source = null;
+      this.originalLine = null;
+      this.originalColumn = null;
+      this.name = null;
+    }
+    BasicSourceMapConsumer.prototype._parseMappings = function SourceMapConsumer_parseMappings(aStr, aSourceRoot) {
+      var generatedLine = 1;
+      var previousGeneratedColumn = 0;
+      var previousOriginalLine = 0;
+      var previousOriginalColumn = 0;
+      var previousSource = 0;
+      var previousName = 0;
+      var length = aStr.length;
+      var index = 0;
+      var cachedSegments = {};
+      var temp = {};
+      var originalMappings = [];
+      var generatedMappings = [];
+      var mapping, str, segment, end, value;
+      while (index < length) {
+        if (aStr.charAt(index) === ";") {
+          generatedLine++;
+          index++;
+          previousGeneratedColumn = 0;
+        } else if (aStr.charAt(index) === ",") {
+          index++;
+        } else {
+          mapping = new Mapping();
+          mapping.generatedLine = generatedLine;
+          for (end = index; end < length; end++) {
+            if (this._charIsMappingSeparator(aStr, end)) {
+              break;
+            }
+          }
+          str = aStr.slice(index, end);
+          segment = cachedSegments[str];
+          if (segment) {
+            index += str.length;
+          } else {
+            segment = [];
+            while (index < end) {
+              base64VLQ.decode(aStr, index, temp);
+              value = temp.value;
+              index = temp.rest;
+              segment.push(value);
+            }
+            if (segment.length === 2) {
+              throw new Error("Found a source, but no line and column");
+            }
+            if (segment.length === 3) {
+              throw new Error("Found a source and line, but no column");
+            }
+            cachedSegments[str] = segment;
+          }
+          mapping.generatedColumn = previousGeneratedColumn + segment[0];
+          previousGeneratedColumn = mapping.generatedColumn;
+          if (segment.length > 1) {
+            mapping.source = previousSource + segment[1];
+            previousSource += segment[1];
+            mapping.originalLine = previousOriginalLine + segment[2];
+            previousOriginalLine = mapping.originalLine;
+            mapping.originalLine += 1;
+            mapping.originalColumn = previousOriginalColumn + segment[3];
+            previousOriginalColumn = mapping.originalColumn;
+            if (segment.length > 4) {
+              mapping.name = previousName + segment[4];
+              previousName += segment[4];
+            }
+          }
+          generatedMappings.push(mapping);
+          if (typeof mapping.originalLine === "number") {
+            originalMappings.push(mapping);
+          }
+        }
+      }
+      quickSort(generatedMappings, util.compareByGeneratedPositionsDeflated);
+      this.__generatedMappings = generatedMappings;
+      quickSort(originalMappings, util.compareByOriginalPositions);
+      this.__originalMappings = originalMappings;
+    };
+    BasicSourceMapConsumer.prototype._findMapping = function SourceMapConsumer_findMapping(aNeedle, aMappings, aLineName, aColumnName, aComparator, aBias) {
+      if (aNeedle[aLineName] <= 0) {
+        throw new TypeError("Line must be greater than or equal to 1, got " + aNeedle[aLineName]);
+      }
+      if (aNeedle[aColumnName] < 0) {
+        throw new TypeError("Column must be greater than or equal to 0, got " + aNeedle[aColumnName]);
+      }
+      return binarySearch.search(aNeedle, aMappings, aComparator, aBias);
+    };
+    BasicSourceMapConsumer.prototype.computeColumnSpans = function SourceMapConsumer_computeColumnSpans() {
+      for (var index = 0; index < this._generatedMappings.length; ++index) {
+        var mapping = this._generatedMappings[index];
+        if (index + 1 < this._generatedMappings.length) {
+          var nextMapping = this._generatedMappings[index + 1];
+          if (mapping.generatedLine === nextMapping.generatedLine) {
+            mapping.lastGeneratedColumn = nextMapping.generatedColumn - 1;
+            continue;
+          }
+        }
+        mapping.lastGeneratedColumn = Infinity;
+      }
+    };
+    BasicSourceMapConsumer.prototype.originalPositionFor = function SourceMapConsumer_originalPositionFor(aArgs) {
+      var needle = {
+        generatedLine: util.getArg(aArgs, "line"),
+        generatedColumn: util.getArg(aArgs, "column")
+      };
+      var index = this._findMapping(needle, this._generatedMappings, "generatedLine", "generatedColumn", util.compareByGeneratedPositionsDeflated, util.getArg(aArgs, "bias", SourceMapConsumer.GREATEST_LOWER_BOUND));
+      if (index >= 0) {
+        var mapping = this._generatedMappings[index];
+        if (mapping.generatedLine === needle.generatedLine) {
+          var source = util.getArg(mapping, "source", null);
+          if (source !== null) {
+            source = this._sources.at(source);
+            source = util.computeSourceURL(this.sourceRoot, source, this._sourceMapURL);
+          }
+          var name = util.getArg(mapping, "name", null);
+          if (name !== null) {
+            name = this._names.at(name);
+          }
+          return {
+            source,
+            line: util.getArg(mapping, "originalLine", null),
+            column: util.getArg(mapping, "originalColumn", null),
+            name
+          };
+        }
+      }
+      return {
+        source: null,
+        line: null,
+        column: null,
+        name: null
+      };
+    };
+    BasicSourceMapConsumer.prototype.hasContentsOfAllSources = function BasicSourceMapConsumer_hasContentsOfAllSources() {
+      if (!this.sourcesContent) {
+        return false;
+      }
+      return this.sourcesContent.length >= this._sources.size() && !this.sourcesContent.some(function(sc) {
+        return sc == null;
+      });
+    };
+    BasicSourceMapConsumer.prototype.sourceContentFor = function SourceMapConsumer_sourceContentFor(aSource, nullOnMissing) {
+      if (!this.sourcesContent) {
+        return null;
+      }
+      var index = this._findSourceIndex(aSource);
+      if (index >= 0) {
+        return this.sourcesContent[index];
+      }
+      var relativeSource = aSource;
+      if (this.sourceRoot != null) {
+        relativeSource = util.relative(this.sourceRoot, relativeSource);
+      }
+      var url;
+      if (this.sourceRoot != null && (url = util.urlParse(this.sourceRoot))) {
+        var fileUriAbsPath = relativeSource.replace(/^file:\/\//, "");
+        if (url.scheme == "file" && this._sources.has(fileUriAbsPath)) {
+          return this.sourcesContent[this._sources.indexOf(fileUriAbsPath)];
+        }
+        if ((!url.path || url.path == "/") && this._sources.has("/" + relativeSource)) {
+          return this.sourcesContent[this._sources.indexOf("/" + relativeSource)];
+        }
+      }
+      if (nullOnMissing) {
+        return null;
+      } else {
+        throw new Error('"' + relativeSource + '" is not in the SourceMap.');
+      }
+    };
+    BasicSourceMapConsumer.prototype.generatedPositionFor = function SourceMapConsumer_generatedPositionFor(aArgs) {
+      var source = util.getArg(aArgs, "source");
+      source = this._findSourceIndex(source);
+      if (source < 0) {
+        return {
+          line: null,
+          column: null,
+          lastColumn: null
+        };
+      }
+      var needle = {
+        source,
+        originalLine: util.getArg(aArgs, "line"),
+        originalColumn: util.getArg(aArgs, "column")
+      };
+      var index = this._findMapping(needle, this._originalMappings, "originalLine", "originalColumn", util.compareByOriginalPositions, util.getArg(aArgs, "bias", SourceMapConsumer.GREATEST_LOWER_BOUND));
+      if (index >= 0) {
+        var mapping = this._originalMappings[index];
+        if (mapping.source === needle.source) {
+          return {
+            line: util.getArg(mapping, "generatedLine", null),
+            column: util.getArg(mapping, "generatedColumn", null),
+            lastColumn: util.getArg(mapping, "lastGeneratedColumn", null)
+          };
+        }
+      }
+      return {
+        line: null,
+        column: null,
+        lastColumn: null
+      };
+    };
+    exports.BasicSourceMapConsumer = BasicSourceMapConsumer;
+    function IndexedSourceMapConsumer(aSourceMap, aSourceMapURL) {
+      var sourceMap = aSourceMap;
+      if (typeof aSourceMap === "string") {
+        sourceMap = util.parseSourceMapInput(aSourceMap);
+      }
+      var version = util.getArg(sourceMap, "version");
+      var sections = util.getArg(sourceMap, "sections");
+      if (version != this._version) {
+        throw new Error("Unsupported version: " + version);
+      }
+      this._sources = new ArraySet();
+      this._names = new ArraySet();
+      var lastOffset = {
+        line: -1,
+        column: 0
+      };
+      this._sections = sections.map(function(s) {
+        if (s.url) {
+          throw new Error("Support for url field in sections not implemented.");
+        }
+        var offset = util.getArg(s, "offset");
+        var offsetLine = util.getArg(offset, "line");
+        var offsetColumn = util.getArg(offset, "column");
+        if (offsetLine < lastOffset.line || offsetLine === lastOffset.line && offsetColumn < lastOffset.column) {
+          throw new Error("Section offsets must be ordered and non-overlapping.");
+        }
+        lastOffset = offset;
+        return {
+          generatedOffset: {
+            generatedLine: offsetLine + 1,
+            generatedColumn: offsetColumn + 1
+          },
+          consumer: new SourceMapConsumer(util.getArg(s, "map"), aSourceMapURL)
+        };
+      });
+    }
+    IndexedSourceMapConsumer.prototype = Object.create(SourceMapConsumer.prototype);
+    IndexedSourceMapConsumer.prototype.constructor = SourceMapConsumer;
+    IndexedSourceMapConsumer.prototype._version = 3;
+    Object.defineProperty(IndexedSourceMapConsumer.prototype, "sources", {
+      get: function() {
+        var sources = [];
+        for (var i = 0; i < this._sections.length; i++) {
+          for (var j = 0; j < this._sections[i].consumer.sources.length; j++) {
+            sources.push(this._sections[i].consumer.sources[j]);
+          }
+        }
+        return sources;
+      }
+    });
+    IndexedSourceMapConsumer.prototype.originalPositionFor = function IndexedSourceMapConsumer_originalPositionFor(aArgs) {
+      var needle = {
+        generatedLine: util.getArg(aArgs, "line"),
+        generatedColumn: util.getArg(aArgs, "column")
+      };
+      var sectionIndex = binarySearch.search(needle, this._sections, function(needle2, section2) {
+        var cmp = needle2.generatedLine - section2.generatedOffset.generatedLine;
+        if (cmp) {
+          return cmp;
+        }
+        return needle2.generatedColumn - section2.generatedOffset.generatedColumn;
+      });
+      var section = this._sections[sectionIndex];
+      if (!section) {
+        return {
+          source: null,
+          line: null,
+          column: null,
+          name: null
+        };
+      }
+      return section.consumer.originalPositionFor({
+        line: needle.generatedLine - (section.generatedOffset.generatedLine - 1),
+        column: needle.generatedColumn - (section.generatedOffset.generatedLine === needle.generatedLine ? section.generatedOffset.generatedColumn - 1 : 0),
+        bias: aArgs.bias
+      });
+    };
+    IndexedSourceMapConsumer.prototype.hasContentsOfAllSources = function IndexedSourceMapConsumer_hasContentsOfAllSources() {
+      return this._sections.every(function(s) {
+        return s.consumer.hasContentsOfAllSources();
+      });
+    };
+    IndexedSourceMapConsumer.prototype.sourceContentFor = function IndexedSourceMapConsumer_sourceContentFor(aSource, nullOnMissing) {
+      for (var i = 0; i < this._sections.length; i++) {
+        var section = this._sections[i];
+        var content = section.consumer.sourceContentFor(aSource, true);
+        if (content) {
+          return content;
+        }
+      }
+      if (nullOnMissing) {
+        return null;
+      } else {
+        throw new Error('"' + aSource + '" is not in the SourceMap.');
+      }
+    };
+    IndexedSourceMapConsumer.prototype.generatedPositionFor = function IndexedSourceMapConsumer_generatedPositionFor(aArgs) {
+      for (var i = 0; i < this._sections.length; i++) {
+        var section = this._sections[i];
+        if (section.consumer._findSourceIndex(util.getArg(aArgs, "source")) === -1) {
+          continue;
+        }
+        var generatedPosition = section.consumer.generatedPositionFor(aArgs);
+        if (generatedPosition) {
+          var ret = {
+            line: generatedPosition.line + (section.generatedOffset.generatedLine - 1),
+            column: generatedPosition.column + (section.generatedOffset.generatedLine === generatedPosition.line ? section.generatedOffset.generatedColumn - 1 : 0)
+          };
+          return ret;
+        }
+      }
+      return {
+        line: null,
+        column: null
+      };
+    };
+    IndexedSourceMapConsumer.prototype._parseMappings = function IndexedSourceMapConsumer_parseMappings(aStr, aSourceRoot) {
+      this.__generatedMappings = [];
+      this.__originalMappings = [];
+      for (var i = 0; i < this._sections.length; i++) {
+        var section = this._sections[i];
+        var sectionMappings = section.consumer._generatedMappings;
+        for (var j = 0; j < sectionMappings.length; j++) {
+          var mapping = sectionMappings[j];
+          var source = section.consumer._sources.at(mapping.source);
+          source = util.computeSourceURL(section.consumer.sourceRoot, source, this._sourceMapURL);
+          this._sources.add(source);
+          source = this._sources.indexOf(source);
+          var name = null;
+          if (mapping.name) {
+            name = section.consumer._names.at(mapping.name);
+            this._names.add(name);
+            name = this._names.indexOf(name);
+          }
+          var adjustedMapping = {
+            source,
+            generatedLine: mapping.generatedLine + (section.generatedOffset.generatedLine - 1),
+            generatedColumn: mapping.generatedColumn + (section.generatedOffset.generatedLine === mapping.generatedLine ? section.generatedOffset.generatedColumn - 1 : 0),
+            originalLine: mapping.originalLine,
+            originalColumn: mapping.originalColumn,
+            name
+          };
+          this.__generatedMappings.push(adjustedMapping);
+          if (typeof adjustedMapping.originalLine === "number") {
+            this.__originalMappings.push(adjustedMapping);
+          }
+        }
+      }
+      quickSort(this.__generatedMappings, util.compareByGeneratedPositionsDeflated);
+      quickSort(this.__originalMappings, util.compareByOriginalPositions);
+    };
+    exports.IndexedSourceMapConsumer = IndexedSourceMapConsumer;
+  }
+});
+
+// node_modules/source-map/lib/source-node.js
+var require_source_node = __commonJS({
+  "node_modules/source-map/lib/source-node.js"(exports) {
+    var SourceMapGenerator = require_source_map_generator().SourceMapGenerator;
+    var util = require_util();
+    var REGEX_NEWLINE = /(\r?\n)/;
+    var NEWLINE_CODE = 10;
+    var isSourceNode = "$$$isSourceNode$$$";
+    function SourceNode(aLine, aColumn, aSource, aChunks, aName) {
+      this.children = [];
+      this.sourceContents = {};
+      this.line = aLine == null ? null : aLine;
+      this.column = aColumn == null ? null : aColumn;
+      this.source = aSource == null ? null : aSource;
+      this.name = aName == null ? null : aName;
+      this[isSourceNode] = true;
+      if (aChunks != null)
+        this.add(aChunks);
+    }
+    SourceNode.fromStringWithSourceMap = function SourceNode_fromStringWithSourceMap(aGeneratedCode, aSourceMapConsumer, aRelativePath) {
+      var node = new SourceNode();
+      var remainingLines = aGeneratedCode.split(REGEX_NEWLINE);
+      var remainingLinesIndex = 0;
+      var shiftNextLine = function() {
+        var lineContents = getNextLine();
+        var newLine = getNextLine() || "";
+        return lineContents + newLine;
+        function getNextLine() {
+          return remainingLinesIndex < remainingLines.length ? remainingLines[remainingLinesIndex++] : void 0;
+        }
+      };
+      var lastGeneratedLine = 1, lastGeneratedColumn = 0;
+      var lastMapping = null;
+      aSourceMapConsumer.eachMapping(function(mapping) {
+        if (lastMapping !== null) {
+          if (lastGeneratedLine < mapping.generatedLine) {
+            addMappingWithCode(lastMapping, shiftNextLine());
+            lastGeneratedLine++;
+            lastGeneratedColumn = 0;
+          } else {
+            var nextLine = remainingLines[remainingLinesIndex] || "";
+            var code = nextLine.substr(0, mapping.generatedColumn - lastGeneratedColumn);
+            remainingLines[remainingLinesIndex] = nextLine.substr(mapping.generatedColumn - lastGeneratedColumn);
+            lastGeneratedColumn = mapping.generatedColumn;
+            addMappingWithCode(lastMapping, code);
+            lastMapping = mapping;
+            return;
+          }
+        }
+        while (lastGeneratedLine < mapping.generatedLine) {
+          node.add(shiftNextLine());
+          lastGeneratedLine++;
+        }
+        if (lastGeneratedColumn < mapping.generatedColumn) {
+          var nextLine = remainingLines[remainingLinesIndex] || "";
+          node.add(nextLine.substr(0, mapping.generatedColumn));
+          remainingLines[remainingLinesIndex] = nextLine.substr(mapping.generatedColumn);
+          lastGeneratedColumn = mapping.generatedColumn;
+        }
+        lastMapping = mapping;
+      }, this);
+      if (remainingLinesIndex < remainingLines.length) {
+        if (lastMapping) {
+          addMappingWithCode(lastMapping, shiftNextLine());
+        }
+        node.add(remainingLines.splice(remainingLinesIndex).join(""));
+      }
+      aSourceMapConsumer.sources.forEach(function(sourceFile) {
+        var content = aSourceMapConsumer.sourceContentFor(sourceFile);
+        if (content != null) {
+          if (aRelativePath != null) {
+            sourceFile = util.join(aRelativePath, sourceFile);
+          }
+          node.setSourceContent(sourceFile, content);
+        }
+      });
+      return node;
+      function addMappingWithCode(mapping, code) {
+        if (mapping === null || mapping.source === void 0) {
+          node.add(code);
+        } else {
+          var source = aRelativePath ? util.join(aRelativePath, mapping.source) : mapping.source;
+          node.add(new SourceNode(mapping.originalLine, mapping.originalColumn, source, code, mapping.name));
+        }
+      }
+    };
+    SourceNode.prototype.add = function SourceNode_add(aChunk) {
+      if (Array.isArray(aChunk)) {
+        aChunk.forEach(function(chunk) {
+          this.add(chunk);
+        }, this);
+      } else if (aChunk[isSourceNode] || typeof aChunk === "string") {
+        if (aChunk) {
+          this.children.push(aChunk);
+        }
+      } else {
+        throw new TypeError("Expected a SourceNode, string, or an array of SourceNodes and strings. Got " + aChunk);
+      }
+      return this;
+    };
+    SourceNode.prototype.prepend = function SourceNode_prepend(aChunk) {
+      if (Array.isArray(aChunk)) {
+        for (var i = aChunk.length - 1; i >= 0; i--) {
+          this.prepend(aChunk[i]);
+        }
+      } else if (aChunk[isSourceNode] || typeof aChunk === "string") {
+        this.children.unshift(aChunk);
+      } else {
+        throw new TypeError("Expected a SourceNode, string, or an array of SourceNodes and strings. Got " + aChunk);
+      }
+      return this;
+    };
+    SourceNode.prototype.walk = function SourceNode_walk(aFn) {
+      var chunk;
+      for (var i = 0, len = this.children.length; i < len; i++) {
+        chunk = this.children[i];
+        if (chunk[isSourceNode]) {
+          chunk.walk(aFn);
+        } else {
+          if (chunk !== "") {
+            aFn(chunk, {
+              source: this.source,
+              line: this.line,
+              column: this.column,
+              name: this.name
+            });
+          }
+        }
+      }
+    };
+    SourceNode.prototype.join = function SourceNode_join(aSep) {
+      var newChildren;
+      var i;
+      var len = this.children.length;
+      if (len > 0) {
+        newChildren = [];
+        for (i = 0; i < len - 1; i++) {
+          newChildren.push(this.children[i]);
+          newChildren.push(aSep);
+        }
+        newChildren.push(this.children[i]);
+        this.children = newChildren;
+      }
+      return this;
+    };
+    SourceNode.prototype.replaceRight = function SourceNode_replaceRight(aPattern, aReplacement) {
+      var lastChild = this.children[this.children.length - 1];
+      if (lastChild[isSourceNode]) {
+        lastChild.replaceRight(aPattern, aReplacement);
+      } else if (typeof lastChild === "string") {
+        this.children[this.children.length - 1] = lastChild.replace(aPattern, aReplacement);
+      } else {
+        this.children.push("".replace(aPattern, aReplacement));
+      }
+      return this;
+    };
+    SourceNode.prototype.setSourceContent = function SourceNode_setSourceContent(aSourceFile, aSourceContent) {
+      this.sourceContents[util.toSetString(aSourceFile)] = aSourceContent;
+    };
+    SourceNode.prototype.walkSourceContents = function SourceNode_walkSourceContents(aFn) {
+      for (var i = 0, len = this.children.length; i < len; i++) {
+        if (this.children[i][isSourceNode]) {
+          this.children[i].walkSourceContents(aFn);
+        }
+      }
+      var sources = Object.keys(this.sourceContents);
+      for (var i = 0, len = sources.length; i < len; i++) {
+        aFn(util.fromSetString(sources[i]), this.sourceContents[sources[i]]);
+      }
+    };
+    SourceNode.prototype.toString = function SourceNode_toString() {
+      var str = "";
+      this.walk(function(chunk) {
+        str += chunk;
+      });
+      return str;
+    };
+    SourceNode.prototype.toStringWithSourceMap = function SourceNode_toStringWithSourceMap(aArgs) {
+      var generated = {
+        code: "",
+        line: 1,
+        column: 0
+      };
+      var map = new SourceMapGenerator(aArgs);
+      var sourceMappingActive = false;
+      var lastOriginalSource = null;
+      var lastOriginalLine = null;
+      var lastOriginalColumn = null;
+      var lastOriginalName = null;
+      this.walk(function(chunk, original) {
+        generated.code += chunk;
+        if (original.source !== null && original.line !== null && original.column !== null) {
+          if (lastOriginalSource !== original.source || lastOriginalLine !== original.line || lastOriginalColumn !== original.column || lastOriginalName !== original.name) {
+            map.addMapping({
+              source: original.source,
+              original: {
+                line: original.line,
+                column: original.column
+              },
+              generated: {
+                line: generated.line,
+                column: generated.column
+              },
+              name: original.name
+            });
+          }
+          lastOriginalSource = original.source;
+          lastOriginalLine = original.line;
+          lastOriginalColumn = original.column;
+          lastOriginalName = original.name;
+          sourceMappingActive = true;
+        } else if (sourceMappingActive) {
+          map.addMapping({
+            generated: {
+              line: generated.line,
+              column: generated.column
+            }
+          });
+          lastOriginalSource = null;
+          sourceMappingActive = false;
+        }
+        for (var idx = 0, length = chunk.length; idx < length; idx++) {
+          if (chunk.charCodeAt(idx) === NEWLINE_CODE) {
+            generated.line++;
+            generated.column = 0;
+            if (idx + 1 === length) {
+              lastOriginalSource = null;
+              sourceMappingActive = false;
+            } else if (sourceMappingActive) {
+              map.addMapping({
+                source: original.source,
+                original: {
+                  line: original.line,
+                  column: original.column
+                },
+                generated: {
+                  line: generated.line,
+                  column: generated.column
+                },
+                name: original.name
+              });
+            }
+          } else {
+            generated.column++;
+          }
+        }
+      });
+      this.walkSourceContents(function(sourceFile, sourceContent) {
+        map.setSourceContent(sourceFile, sourceContent);
+      });
+      return { code: generated.code, map };
+    };
+    exports.SourceNode = SourceNode;
+  }
+});
+
+// node_modules/source-map/source-map.js
+var require_source_map = __commonJS({
+  "node_modules/source-map/source-map.js"(exports) {
+    exports.SourceMapGenerator = require_source_map_generator().SourceMapGenerator;
+    exports.SourceMapConsumer = require_source_map_consumer().SourceMapConsumer;
+    exports.SourceNode = require_source_node().SourceNode;
+  }
+});
+
+// node_modules/buffer-from/index.js
+var require_buffer_from = __commonJS({
+  "node_modules/buffer-from/index.js"(exports, module2) {
+    var toString = Object.prototype.toString;
+    var isModern = typeof Buffer !== "undefined" && typeof Buffer.alloc === "function" && typeof Buffer.allocUnsafe === "function" && typeof Buffer.from === "function";
+    function isArrayBuffer(input) {
+      return toString.call(input).slice(8, -1) === "ArrayBuffer";
+    }
+    function fromArrayBuffer(obj, byteOffset, length) {
+      byteOffset >>>= 0;
+      var maxLength = obj.byteLength - byteOffset;
+      if (maxLength < 0) {
+        throw new RangeError("'offset' is out of bounds");
+      }
+      if (length === void 0) {
+        length = maxLength;
+      } else {
+        length >>>= 0;
+        if (length > maxLength) {
+          throw new RangeError("'length' is out of bounds");
+        }
+      }
+      return isModern ? Buffer.from(obj.slice(byteOffset, byteOffset + length)) : new Buffer(new Uint8Array(obj.slice(byteOffset, byteOffset + length)));
+    }
+    function fromString(string, encoding) {
+      if (typeof encoding !== "string" || encoding === "") {
+        encoding = "utf8";
+      }
+      if (!Buffer.isEncoding(encoding)) {
+        throw new TypeError('"encoding" must be a valid string encoding');
+      }
+      return isModern ? Buffer.from(string, encoding) : new Buffer(string, encoding);
+    }
+    function bufferFrom(value, encodingOrOffset, length) {
+      if (typeof value === "number") {
+        throw new TypeError('"value" argument must not be a number');
+      }
+      if (isArrayBuffer(value)) {
+        return fromArrayBuffer(value, encodingOrOffset, length);
+      }
+      if (typeof value === "string") {
+        return fromString(value, encodingOrOffset);
+      }
+      return isModern ? Buffer.from(value) : new Buffer(value);
+    }
+    module2.exports = bufferFrom;
+  }
+});
+
+// node_modules/source-map-support/source-map-support.js
+var require_source_map_support = __commonJS({
+  "node_modules/source-map-support/source-map-support.js"(exports, module2) {
+    var SourceMapConsumer = require_source_map().SourceMapConsumer;
+    var path = require("path");
+    var fs;
+    try {
+      fs = require("fs");
+      if (!fs.existsSync || !fs.readFileSync) {
+        fs = null;
+      }
+    } catch (err) {
+    }
+    var bufferFrom = require_buffer_from();
+    function dynamicRequire(mod, request) {
+      return mod.require(request);
+    }
+    var errorFormatterInstalled = false;
+    var uncaughtShimInstalled = false;
+    var emptyCacheBetweenOperations = false;
+    var environment = "auto";
+    var fileContentsCache = {};
+    var sourceMapCache = {};
+    var reSourceMap = /^data:application\/json[^,]+base64,/;
+    var retrieveFileHandlers = [];
+    var retrieveMapHandlers = [];
+    function isInBrowser() {
+      if (environment === "browser")
+        return true;
+      if (environment === "node")
+        return false;
+      return typeof window !== "undefined" && typeof XMLHttpRequest === "function" && !(window.require && window.module && window.process && window.process.type === "renderer");
+    }
+    function hasGlobalProcessEventEmitter() {
+      return typeof process === "object" && process !== null && typeof process.on === "function";
+    }
+    function globalProcessVersion() {
+      if (typeof process === "object" && process !== null) {
+        return process.version;
+      } else {
+        return "";
+      }
+    }
+    function globalProcessStderr() {
+      if (typeof process === "object" && process !== null) {
+        return process.stderr;
+      }
+    }
+    function globalProcessExit(code) {
+      if (typeof process === "object" && process !== null && typeof process.exit === "function") {
+        return process.exit(code);
+      }
+    }
+    function handlerExec(list) {
+      return function(arg) {
+        for (var i = 0; i < list.length; i++) {
+          var ret = list[i](arg);
+          if (ret) {
+            return ret;
+          }
+        }
+        return null;
+      };
+    }
+    var retrieveFile = handlerExec(retrieveFileHandlers);
+    retrieveFileHandlers.push(function(path2) {
+      path2 = path2.trim();
+      if (/^file:/.test(path2)) {
+        path2 = path2.replace(/file:\/\/\/(\w:)?/, function(protocol, drive) {
+          return drive ? "" : "/";
+        });
+      }
+      if (path2 in fileContentsCache) {
+        return fileContentsCache[path2];
+      }
+      var contents = "";
+      try {
+        if (!fs) {
+          var xhr = new XMLHttpRequest();
+          xhr.open("GET", path2, false);
+          xhr.send(null);
+          if (xhr.readyState === 4 && xhr.status === 200) {
+            contents = xhr.responseText;
+          }
+        } else if (fs.existsSync(path2)) {
+          contents = fs.readFileSync(path2, "utf8");
+        }
+      } catch (er) {
+      }
+      return fileContentsCache[path2] = contents;
+    });
+    function supportRelativeURL(file, url) {
+      if (!file)
+        return url;
+      var dir = path.dirname(file);
+      var match = /^\w+:\/\/[^\/]*/.exec(dir);
+      var protocol = match ? match[0] : "";
+      var startPath = dir.slice(protocol.length);
+      if (protocol && /^\/\w\:/.test(startPath)) {
+        protocol += "/";
+        return protocol + path.resolve(dir.slice(protocol.length), url).replace(/\\/g, "/");
+      }
+      return protocol + path.resolve(dir.slice(protocol.length), url);
+    }
+    function retrieveSourceMapURL(source) {
+      var fileData;
+      if (isInBrowser()) {
+        try {
+          var xhr = new XMLHttpRequest();
+          xhr.open("GET", source, false);
+          xhr.send(null);
+          fileData = xhr.readyState === 4 ? xhr.responseText : null;
+          var sourceMapHeader = xhr.getResponseHeader("SourceMap") || xhr.getResponseHeader("X-SourceMap");
+          if (sourceMapHeader) {
+            return sourceMapHeader;
+          }
+        } catch (e) {
+        }
+      }
+      fileData = retrieveFile(source);
+      var re = /(?:\/\/[@#][\s]*sourceMappingURL=([^\s'"]+)[\s]*$)|(?:\/\*[@#][\s]*sourceMappingURL=([^\s*'"]+)[\s]*(?:\*\/)[\s]*$)/mg;
+      var lastMatch, match;
+      while (match = re.exec(fileData))
+        lastMatch = match;
+      if (!lastMatch)
+        return null;
+      return lastMatch[1];
+    }
+    var retrieveSourceMap = handlerExec(retrieveMapHandlers);
+    retrieveMapHandlers.push(function(source) {
+      var sourceMappingURL = retrieveSourceMapURL(source);
+      if (!sourceMappingURL)
+        return null;
+      var sourceMapData;
+      if (reSourceMap.test(sourceMappingURL)) {
+        var rawData = sourceMappingURL.slice(sourceMappingURL.indexOf(",") + 1);
+        sourceMapData = bufferFrom(rawData, "base64").toString();
+        sourceMappingURL = source;
+      } else {
+        sourceMappingURL = supportRelativeURL(source, sourceMappingURL);
+        sourceMapData = retrieveFile(sourceMappingURL);
+      }
+      if (!sourceMapData) {
+        return null;
+      }
+      return {
+        url: sourceMappingURL,
+        map: sourceMapData
+      };
+    });
+    function mapSourcePosition(position) {
+      var sourceMap = sourceMapCache[position.source];
+      if (!sourceMap) {
+        var urlAndMap = retrieveSourceMap(position.source);
+        if (urlAndMap) {
+          sourceMap = sourceMapCache[position.source] = {
+            url: urlAndMap.url,
+            map: new SourceMapConsumer(urlAndMap.map)
+          };
+          if (sourceMap.map.sourcesContent) {
+            sourceMap.map.sources.forEach(function(source, i) {
+              var contents = sourceMap.map.sourcesContent[i];
+              if (contents) {
+                var url = supportRelativeURL(sourceMap.url, source);
+                fileContentsCache[url] = contents;
+              }
+            });
+          }
+        } else {
+          sourceMap = sourceMapCache[position.source] = {
+            url: null,
+            map: null
+          };
+        }
+      }
+      if (sourceMap && sourceMap.map && typeof sourceMap.map.originalPositionFor === "function") {
+        var originalPosition = sourceMap.map.originalPositionFor(position);
+        if (originalPosition.source !== null) {
+          originalPosition.source = supportRelativeURL(sourceMap.url, originalPosition.source);
+          return originalPosition;
+        }
+      }
+      return position;
+    }
+    function mapEvalOrigin(origin) {
+      var match = /^eval at ([^(]+) \((.+):(\d+):(\d+)\)$/.exec(origin);
+      if (match) {
+        var position = mapSourcePosition({
+          source: match[2],
+          line: +match[3],
+          column: match[4] - 1
+        });
+        return "eval at " + match[1] + " (" + position.source + ":" + position.line + ":" + (position.column + 1) + ")";
+      }
+      match = /^eval at ([^(]+) \((.+)\)$/.exec(origin);
+      if (match) {
+        return "eval at " + match[1] + " (" + mapEvalOrigin(match[2]) + ")";
+      }
+      return origin;
+    }
+    function CallSiteToString() {
+      var fileName;
+      var fileLocation = "";
+      if (this.isNative()) {
+        fileLocation = "native";
+      } else {
+        fileName = this.getScriptNameOrSourceURL();
+        if (!fileName && this.isEval()) {
+          fileLocation = this.getEvalOrigin();
+          fileLocation += ", ";
+        }
+        if (fileName) {
+          fileLocation += fileName;
+        } else {
+          fileLocation += "<anonymous>";
+        }
+        var lineNumber = this.getLineNumber();
+        if (lineNumber != null) {
+          fileLocation += ":" + lineNumber;
+          var columnNumber = this.getColumnNumber();
+          if (columnNumber) {
+            fileLocation += ":" + columnNumber;
+          }
+        }
+      }
+      var line = "";
+      var functionName = this.getFunctionName();
+      var addSuffix = true;
+      var isConstructor = this.isConstructor();
+      var isMethodCall = !(this.isToplevel() || isConstructor);
+      if (isMethodCall) {
+        var typeName = this.getTypeName();
+        if (typeName === "[object Object]") {
+          typeName = "null";
+        }
+        var methodName = this.getMethodName();
+        if (functionName) {
+          if (typeName && functionName.indexOf(typeName) != 0) {
+            line += typeName + ".";
+          }
+          line += functionName;
+          if (methodName && functionName.indexOf("." + methodName) != functionName.length - methodName.length - 1) {
+            line += " [as " + methodName + "]";
+          }
+        } else {
+          line += typeName + "." + (methodName || "<anonymous>");
+        }
+      } else if (isConstructor) {
+        line += "new " + (functionName || "<anonymous>");
+      } else if (functionName) {
+        line += functionName;
+      } else {
+        line += fileLocation;
+        addSuffix = false;
+      }
+      if (addSuffix) {
+        line += " (" + fileLocation + ")";
+      }
+      return line;
+    }
+    function cloneCallSite(frame) {
+      var object = {};
+      Object.getOwnPropertyNames(Object.getPrototypeOf(frame)).forEach(function(name) {
+        object[name] = /^(?:is|get)/.test(name) ? function() {
+          return frame[name].call(frame);
+        } : frame[name];
+      });
+      object.toString = CallSiteToString;
+      return object;
+    }
+    function wrapCallSite(frame, state) {
+      if (state === void 0) {
+        state = { nextPosition: null, curPosition: null };
+      }
+      if (frame.isNative()) {
+        state.curPosition = null;
+        return frame;
+      }
+      var source = frame.getFileName() || frame.getScriptNameOrSourceURL();
+      if (source) {
+        var line = frame.getLineNumber();
+        var column = frame.getColumnNumber() - 1;
+        var noHeader = /^v(10\.1[6-9]|10\.[2-9][0-9]|10\.[0-9]{3,}|1[2-9]\d*|[2-9]\d|\d{3,}|11\.11)/;
+        var headerLength = noHeader.test(globalProcessVersion()) ? 0 : 62;
+        if (line === 1 && column > headerLength && !isInBrowser() && !frame.isEval()) {
+          column -= headerLength;
+        }
+        var position = mapSourcePosition({
+          source,
+          line,
+          column
+        });
+        state.curPosition = position;
+        frame = cloneCallSite(frame);
+        var originalFunctionName = frame.getFunctionName;
+        frame.getFunctionName = function() {
+          if (state.nextPosition == null) {
+            return originalFunctionName();
+          }
+          return state.nextPosition.name || originalFunctionName();
+        };
+        frame.getFileName = function() {
+          return position.source;
+        };
+        frame.getLineNumber = function() {
+          return position.line;
+        };
+        frame.getColumnNumber = function() {
+          return position.column + 1;
+        };
+        frame.getScriptNameOrSourceURL = function() {
+          return position.source;
+        };
+        return frame;
+      }
+      var origin = frame.isEval() && frame.getEvalOrigin();
+      if (origin) {
+        origin = mapEvalOrigin(origin);
+        frame = cloneCallSite(frame);
+        frame.getEvalOrigin = function() {
+          return origin;
+        };
+        return frame;
+      }
+      return frame;
+    }
+    function prepareStackTrace(error, stack) {
+      if (emptyCacheBetweenOperations) {
+        fileContentsCache = {};
+        sourceMapCache = {};
+      }
+      var name = error.name || "Error";
+      var message = error.message || "";
+      var errorString = name + ": " + message;
+      var state = { nextPosition: null, curPosition: null };
+      var processedStack = [];
+      for (var i = stack.length - 1; i >= 0; i--) {
+        processedStack.push("\n    at " + wrapCallSite(stack[i], state));
+        state.nextPosition = state.curPosition;
+      }
+      state.curPosition = state.nextPosition = null;
+      return errorString + processedStack.reverse().join("");
+    }
+    function getErrorSource(error) {
+      var match = /\n    at [^(]+ \((.*):(\d+):(\d+)\)/.exec(error.stack);
+      if (match) {
+        var source = match[1];
+        var line = +match[2];
+        var column = +match[3];
+        var contents = fileContentsCache[source];
+        if (!contents && fs && fs.existsSync(source)) {
+          try {
+            contents = fs.readFileSync(source, "utf8");
+          } catch (er) {
+            contents = "";
+          }
+        }
+        if (contents) {
+          var code = contents.split(/(?:\r\n|\r|\n)/)[line - 1];
+          if (code) {
+            return source + ":" + line + "\n" + code + "\n" + new Array(column).join(" ") + "^";
+          }
+        }
+      }
+      return null;
+    }
+    function printErrorAndExit(error) {
+      var source = getErrorSource(error);
+      var stderr = globalProcessStderr();
+      if (stderr && stderr._handle && stderr._handle.setBlocking) {
+        stderr._handle.setBlocking(true);
+      }
+      if (source) {
+        console.error();
+        console.error(source);
+      }
+      console.error(error.stack);
+      globalProcessExit(1);
+    }
+    function shimEmitUncaughtException() {
+      var origEmit = process.emit;
+      process.emit = function(type) {
+        if (type === "uncaughtException") {
+          var hasStack = arguments[1] && arguments[1].stack;
+          var hasListeners = this.listeners(type).length > 0;
+          if (hasStack && !hasListeners) {
+            return printErrorAndExit(arguments[1]);
+          }
+        }
+        return origEmit.apply(this, arguments);
+      };
+    }
+    var originalRetrieveFileHandlers = retrieveFileHandlers.slice(0);
+    var originalRetrieveMapHandlers = retrieveMapHandlers.slice(0);
+    exports.wrapCallSite = wrapCallSite;
+    exports.getErrorSource = getErrorSource;
+    exports.mapSourcePosition = mapSourcePosition;
+    exports.retrieveSourceMap = retrieveSourceMap;
+    exports.install = function(options) {
+      options = options || {};
+      if (options.environment) {
+        environment = options.environment;
+        if (["node", "browser", "auto"].indexOf(environment) === -1) {
+          throw new Error("environment " + environment + " was unknown. Available options are {auto, browser, node}");
+        }
+      }
+      if (options.retrieveFile) {
+        if (options.overrideRetrieveFile) {
+          retrieveFileHandlers.length = 0;
+        }
+        retrieveFileHandlers.unshift(options.retrieveFile);
+      }
+      if (options.retrieveSourceMap) {
+        if (options.overrideRetrieveSourceMap) {
+          retrieveMapHandlers.length = 0;
+        }
+        retrieveMapHandlers.unshift(options.retrieveSourceMap);
+      }
+      if (options.hookRequire && !isInBrowser()) {
+        var Module = dynamicRequire(module2, "module");
+        var $compile = Module.prototype._compile;
+        if (!$compile.__sourceMapSupport) {
+          Module.prototype._compile = function(content, filename) {
+            fileContentsCache[filename] = content;
+            sourceMapCache[filename] = void 0;
+            return $compile.call(this, content, filename);
+          };
+          Module.prototype._compile.__sourceMapSupport = true;
+        }
+      }
+      if (!emptyCacheBetweenOperations) {
+        emptyCacheBetweenOperations = "emptyCacheBetweenOperations" in options ? options.emptyCacheBetweenOperations : false;
+      }
+      if (!errorFormatterInstalled) {
+        errorFormatterInstalled = true;
+        Error.prepareStackTrace = prepareStackTrace;
+      }
+      if (!uncaughtShimInstalled) {
+        var installHandler = "handleUncaughtExceptions" in options ? options.handleUncaughtExceptions : true;
+        try {
+          var worker_threads = dynamicRequire(module2, "worker_threads");
+          if (worker_threads.isMainThread === false) {
+            installHandler = false;
+          }
+        } catch (e) {
+        }
+        if (installHandler && hasGlobalProcessEventEmitter()) {
+          uncaughtShimInstalled = true;
+          shimEmitUncaughtException();
+        }
+      }
+    };
+    exports.resetRetrieveHandlers = function() {
+      retrieveFileHandlers.length = 0;
+      retrieveMapHandlers.length = 0;
+      retrieveFileHandlers = originalRetrieveFileHandlers.slice(0);
+      retrieveMapHandlers = originalRetrieveMapHandlers.slice(0);
+      retrieveSourceMap = handlerExec(retrieveMapHandlers);
+      retrieveFile = handlerExec(retrieveFileHandlers);
+    };
+  }
+});
+
+// src/app.ts
+var app_exports = {};
+__export(app_exports, {
+  app: () => app
+});
+
+// src/utils/source-map-support.ts
+var csharp = require("csharp");
+var puerts = require("puerts");
+puerts.registerBuildinModule("path", {
+  dirname(path) {
+    return csharp.System.IO.Path.GetDirectoryName(path);
+  },
+  resolve(dir, url) {
+    url = url.replace(/\\/g, "/");
+    while (url.startsWith("../")) {
+      dir = csharp.System.IO.Path.GetDirectoryName(dir);
+      url = url.substr(3);
+    }
+    return csharp.System.IO.Path.Combine(dir, url);
+  }
+});
+puerts.registerBuildinModule("fs", {
+  existsSync(path) {
+    return csharp.System.IO.File.Exists(path);
+  },
+  readFileSync(path) {
+    return csharp.System.IO.File.ReadAllText(path);
+  }
+});
+(function() {
+  let global = this ?? globalThis;
+  global["Buffer"] = global["Buffer"] ?? {};
+})();
+require_source_map_support().install();
+
+// src/ui/ui-main.ts
+var import_csharp28 = require("csharp");
+var import_puerts3 = require("puerts");
+
+// src/gen/ui/main/fairygui.ts
+var import_csharp = require("csharp");
+function bind(cls) {
+  import_csharp.FairyGUI.UIObjectFactory.SetPackageItemExtension(cls.URL, () => {
+    const obj = new cls();
+    const tryBind = (actionName, funcName) => {
+      if (funcName in obj && typeof obj[funcName] === "function") {
+        obj[actionName] = new import_csharp.System.Action(obj[funcName].bind(obj));
+      }
+    };
+    tryBind("__onConstruct", "onConstruct");
+    tryBind("__onDispose", "onDispose");
+    tryBind("__onInit", "onInit");
+    tryBind("__onShown", "onShown");
+    tryBind("__onHide", "onHide");
+    tryBind("__doShowAnimation", "doShowAnimation");
+    tryBind("__doHideAnimation", "doHideAnimation");
+    return obj;
+  });
+}
+
+// src/gen/ui/main/UI_CollectionMenu.ts
+var import_csharp2 = require("csharp");
+var UI_CollectionMenu = class extends import_csharp2.FairyGUI.GComponent {
+  constructor() {
+    super(...arguments);
+    __publicField(this, "m_c1");
+    __publicField(this, "m_Collection");
+    __publicField(this, "m_Close");
+    __publicField(this, "m_SelectAll");
+    __publicField(this, "m_Clear");
+    __publicField(this, "m_Collect");
+    __publicField(this, "m_Remove");
+    __publicField(this, "m_CollectionBar");
+  }
+  static createInstance() {
+    const obj = import_csharp2.FairyGUI.UIPackage.CreateObject("main", "CollectionMenu");
+    return obj;
+  }
+  onConstruct() {
+    this.m_c1 = this.GetControllerAt(0);
+    this.m_Collection = this.GetChildAt(0);
+    this.m_Close = this.GetChildAt(1);
+    this.m_SelectAll = this.GetChildAt(3);
+    this.m_Clear = this.GetChildAt(5);
+    this.m_Collect = this.GetChildAt(7);
+    this.m_Remove = this.GetChildAt(9);
+    this.m_CollectionBar = this.GetChildAt(10);
+  }
+};
+__publicField(UI_CollectionMenu, "URL", "ui://paw0rq8stkn4ih");
+
+// src/gen/ui/main/UI_Dropdown_popup.ts
+var import_csharp3 = require("csharp");
+var UI_Dropdown_popup = class extends import_csharp3.FairyGUI.GComponent {
+  constructor() {
+    super(...arguments);
+    __publicField(this, "m_list");
+  }
+  static createInstance() {
+    const obj = import_csharp3.FairyGUI.UIPackage.CreateObject("main", "Dropdown_popup");
+    return obj;
+  }
+  onConstruct() {
+    this.m_list = this.GetChildAt(1);
+  }
+};
+__publicField(UI_Dropdown_popup, "URL", "ui://paw0rq8saapxjk");
+
+// src/gen/ui/main/UI_IllustDetail.ts
+var import_csharp4 = require("csharp");
+var UI_IllustDetail = class extends import_csharp4.FairyGUI.GComponent {
+  constructor() {
+    super(...arguments);
+    __publicField(this, "m_Title");
+    __publicField(this, "m_Description");
+    __publicField(this, "m_Details");
+    __publicField(this, "m_Tags");
+  }
+  static createInstance() {
+    const obj = import_csharp4.FairyGUI.UIPackage.CreateObject("main", "IllustDetail");
+    return obj;
+  }
+  onConstruct() {
+    this.m_Title = this.GetChildAt(0);
+    this.m_Description = this.GetChildAt(1);
+    this.m_Details = this.GetChildAt(2);
+    this.m_Tags = this.GetChildAt(3);
+  }
+};
+__publicField(UI_IllustDetail, "URL", "ui://paw0rq8sqvrviy");
+
+// src/gen/ui/main/UI_ImageItem.ts
+var import_csharp5 = require("csharp");
+var UI_ImageItem = class extends import_csharp5.FairyGUI.GComponent {
+  constructor() {
+    super(...arguments);
+    __publicField(this, "m_Image");
+    __publicField(this, "m_SelectRadio");
+    __publicField(this, "m_CollectedIcon");
+  }
+  static createInstance() {
+    const obj = import_csharp5.FairyGUI.UIPackage.CreateObject("main", "ImageItem");
+    return obj;
+  }
+  onConstruct() {
+    this.m_Image = this.GetChildAt(0);
+    this.m_SelectRadio = this.GetChildAt(2);
+    this.m_CollectedIcon = this.GetChildAt(3);
+  }
+};
+__publicField(UI_ImageItem, "URL", "ui://paw0rq8stkn4ie");
+
+// src/gen/ui/main/UI_ImageList.ts
+var import_csharp6 = require("csharp");
+var UI_ImageList = class extends import_csharp6.FairyGUI.GComponent {
+  constructor() {
+    super(...arguments);
+    __publicField(this, "m_ImageList");
+  }
+  static createInstance() {
+    const obj = import_csharp6.FairyGUI.UIPackage.CreateObject("main", "ImageList");
+    return obj;
+  }
+  onConstruct() {
+    this.m_ImageList = this.GetChildAt(0);
+  }
+};
+__publicField(UI_ImageList, "URL", "ui://paw0rq8stkn4id");
+
+// src/gen/ui/main/UI_InputField.ts
+var import_csharp7 = require("csharp");
+var UI_InputField = class extends import_csharp7.FairyGUI.GComponent {
+  constructor() {
+    super(...arguments);
+    __publicField(this, "m_text");
+  }
+  static createInstance() {
+    const obj = import_csharp7.FairyGUI.UIPackage.CreateObject("main", "InputField");
+    return obj;
+  }
+  onConstruct() {
+    this.m_text = this.GetChildAt(1);
+  }
+};
+__publicField(UI_InputField, "URL", "ui://paw0rq8sgzsdiq");
+
+// src/gen/ui/main/UI_MenuBar.ts
+var import_csharp8 = require("csharp");
+var UI_MenuBar = class extends import_csharp8.FairyGUI.GComponent {
+  constructor() {
+    super(...arguments);
+    __publicField(this, "m_Back");
+    __publicField(this, "m_Menu");
+    __publicField(this, "m_Search");
+    __publicField(this, "m_Collection");
+    __publicField(this, "m_MenuBar");
+  }
+  static createInstance() {
+    const obj = import_csharp8.FairyGUI.UIPackage.CreateObject("main", "MenuBar");
+    return obj;
+  }
+  onConstruct() {
+    this.m_Back = this.GetChildAt(0);
+    this.m_Menu = this.GetChildAt(1);
+    this.m_Search = this.GetChildAt(2);
+    this.m_Collection = this.GetChildAt(3);
+    this.m_MenuBar = this.GetChildAt(4);
+  }
+};
+__publicField(UI_MenuBar, "URL", "ui://paw0rq8stkn4ic");
+
+// src/gen/ui/main/UI_RefreshFooter.ts
+var import_csharp9 = require("csharp");
+var UI_RefreshFooter = class extends import_csharp9.FairyGUI.GComponent {
+  constructor() {
+    super(...arguments);
+    __publicField(this, "m_c1");
+    __publicField(this, "m_c2");
+    __publicField(this, "m_title");
+    __publicField(this, "m_hint");
+    __publicField(this, "m_t0");
+  }
+  static createInstance() {
+    const obj = import_csharp9.FairyGUI.UIPackage.CreateObject("main", "RefreshFooter");
+    return obj;
+  }
+  onConstruct() {
+    this.m_c1 = this.GetControllerAt(0);
+    this.m_c2 = this.GetControllerAt(1);
+    this.m_title = this.GetChildAt(1);
+    this.m_hint = this.GetChildAt(2);
+    this.m_t0 = this.GetTransitionAt(0);
+  }
+};
+__publicField(UI_RefreshFooter, "URL", "ui://paw0rq8sg4wrj2");
+
+// src/gen/ui/main/UI_StatusBar.ts
+var import_csharp10 = require("csharp");
+var UI_StatusBar = class extends import_csharp10.FairyGUI.GComponent {
+  constructor() {
+    super(...arguments);
+    __publicField(this, "m_title");
+  }
+  static createInstance() {
+    const obj = import_csharp10.FairyGUI.UIPackage.CreateObject("main", "StatusBar");
+    return obj;
+  }
+  onConstruct() {
+    this.m_title = this.GetChildAt(1);
+  }
+};
+__publicField(UI_StatusBar, "URL", "ui://paw0rq8sqix0jt");
+
+// src/gen/ui/main/UI_TagItem.ts
+var import_csharp11 = require("csharp");
+var UI_TagItem = class extends import_csharp11.FairyGUI.GComponent {
+  constructor() {
+    super(...arguments);
+    __publicField(this, "m_title");
+  }
+  static createInstance() {
+    const obj = import_csharp11.FairyGUI.UIPackage.CreateObject("main", "TagItem");
+    return obj;
+  }
+  onConstruct() {
+    this.m_title = this.GetChildAt(1);
+  }
+};
+__publicField(UI_TagItem, "URL", "ui://paw0rq8sqvrviz");
+
+// src/gen/ui/main/UI_CollectionScreen.ts
+var import_csharp12 = require("csharp");
+var UI_CollectionScreen = class extends import_csharp12.FairyGUI.GComponent {
+  constructor() {
+    super(...arguments);
+    __publicField(this, "m_ImageList");
+    __publicField(this, "m_MenuBar");
+  }
+  static createInstance() {
+    const obj = import_csharp12.FairyGUI.UIPackage.CreateObject("main", "CollectionScreen");
+    return obj;
+  }
+  onConstruct() {
+    this.m_ImageList = this.GetChildAt(0);
+    this.m_MenuBar = this.GetChildAt(1);
+  }
+};
+__publicField(UI_CollectionScreen, "URL", "ui://paw0rq8so6gwju");
+
+// src/ui/menu-popup.ts
+var import_csharp25 = require("csharp");
+
+// src/gen/ui/main/UI_MenuPopup.ts
+var import_csharp13 = require("csharp");
+var UI_MenuPopup = class extends import_csharp13.FairyGUI.GLabel {
+  constructor() {
+    super(...arguments);
+    __publicField(this, "m_list");
+  }
+  static createInstance() {
+    const obj = import_csharp13.FairyGUI.UIPackage.CreateObject("main", "MenuPopup");
+    return obj;
+  }
+  onConstruct() {
+    this.m_list = this.GetChildAt(1);
+  }
+};
+__publicField(UI_MenuPopup, "URL", "ui://paw0rq8saapxjr");
+
+// src/api/pixiv-app-api.ts
+var import_csharp15 = require("csharp");
+var import_puerts = require("puerts");
+
+// src/common/util.ts
+var import_csharp14 = require("csharp");
+var Util = class {
+  static stringFormat(str, ...args) {
+    if (args.length == 0)
+      return null;
+    for (var i = 0; i < args.length; i++) {
+      var re = new RegExp("\\{" + i + "\\}", "gm");
+      str = str.replace(re, args[i]);
+    }
+    return str;
+  }
+  static dateFormat(fmt, date) {
+    let ret;
+    const opt = {
+      "Y+": date.getFullYear().toString(),
+      "m+": (date.getMonth() + 1).toString(),
+      "d+": date.getDate().toString(),
+      "H+": date.getHours().toString(),
+      "M+": date.getMinutes().toString(),
+      "S+": date.getSeconds().toString()
+    };
+    for (let k in opt) {
+      ret = new RegExp("(" + k + ")").exec(fmt);
+      if (ret) {
+        fmt = fmt.replace(ret[1], ret[1].length == 1 ? opt[k] : opt[k].padStart(ret[1].length, "0"));
+      }
+      ;
+    }
+    ;
+    return fmt;
+  }
+  static getTimeCounterText(time) {
+    if (time < 60) {
+      return time + "\u79D2";
+    } else {
+      time = Math.ceil(time / 60);
+      return time + "\u5206\u949F";
+    }
+  }
+  static getElem(array, index) {
+    if (index < array.length) {
+      return array[index];
+    }
+    return null;
+  }
+  static pushUnique(a, b) {
+    if (a.indexOf(b) == -1) {
+      a.push(b);
+    }
+  }
+  static pushAllUnique(a, b) {
+    for (const item of b) {
+      if (a.indexOf(item) == -1) {
+        a.push(item);
+      }
+    }
+  }
+  static sleep(timeout) {
+    return new Promise((resolve) => {
+      setTimeout(resolve, timeout);
+    });
+  }
+  static generateToken() {
+    return new Date().getTime() + "" + Math.random() * 1e3;
+  }
+  static jsToCharp(origin, type) {
+    const str = JSON.stringify(origin);
+    return import_csharp14.Pamisu.Common.Util.ParseJson(str, type);
+  }
+};
+
+// src/api/pixiv-app-api.ts
+var clientId = "MOBrBDS8blbauoSck0ZfDbtuzpyT";
+var clientSecret = "lsACyCD94FhDUtGTXi3QzcFE2uU1hqtDaKeqrdwj";
+var hashSecret = "28c1fdd170a5204386cb1313c7077b34f83e4aaf4aa829ce78c231e05b0bae2c";
+var _PixivAppApi = class {
+  constructor() {
+    __publicField(this, "userId", 0);
+    __publicField(this, "accessToken");
+    __publicField(this, "refreshToken");
+    __publicField(this, "addtionalHeaders", {});
+    __publicField(this, "host", "https://app-api.pixiv.net");
+    __publicField(this, "proxyHost");
+    __publicField(this, "proxyPort");
+    __publicField(this, "networkManager");
+    this.networkManager = import_csharp15.Pamisu.Common.NetworkManager.Instance;
+  }
+  static get instance() {
+    if (!this._instance)
+      this._instance = new _PixivAppApi();
+    return this._instance;
+  }
+  setHost(host) {
+    this.host = host;
+  }
+  setProxy(proxyHost, proxyPort) {
+    this.proxyHost = proxyHost;
+    this.proxyPort = proxyPort;
+  }
+  setAddtionalHeaders(addtionalHeaders) {
+    this.addtionalHeaders = addtionalHeaders;
+  }
+  async request(url, option = null, auth = true) {
+    console.log(`Requesting url: ${url} auth: ${auth}`);
+    option = option || {};
+    option.headers = option.headers || {};
+    if (auth) {
+      if (!this.accessToken) {
+        console.log("Authentication required");
+        return;
+      }
+      option.headers["Authorization"] = `Bearer ${this.accessToken}`;
+    }
+    if (!option.headers["user-agent"]) {
+      option.headers["app-os"] = "ios";
+      option.headers["app-os-version"] = "14.6";
+      option.headers["user-agent"] = "PixivIOSApp/7.13.3 (iOS 14.6; iPhone13,2)";
+    }
+    if (this.addtionalHeaders) {
+      for (const key in this.addtionalHeaders) {
+        option.headers[key] = this.addtionalHeaders[key];
+      }
+    }
+    if (this.proxyHost) {
+      option.proxyHost = this.proxyHost;
+      option.proxyPort = this.proxyPort;
+    }
+    return await this.doRequest(url, option);
+  }
+  async doRequest(url, option) {
+    const opt = Util.jsToCharp(option, (0, import_puerts.$typeof)(import_csharp15.Pamisu.Common.RequestOption));
+    const result = await (0, import_puerts.$promise)(this.networkManager.RequestAsync(url, opt));
+    if (result)
+      return result;
+    else
+      console.error("Request error: " + url);
+  }
+  parse(str) {
+    try {
+      return JSON.parse(str);
+    } catch (error) {
+      console.error("Json parse error.");
+      console.log(error);
+    }
+  }
+  parseQueryString(url) {
+    if (!url)
+      return null;
+    let sp = url.split("?");
+    sp = sp[1].split("&");
+    const result = {};
+    for (const item of sp) {
+      const s = item.split("=");
+      result[s[0]] = decodeURI(s[1]);
+    }
+    return result;
+  }
+  async auth(refreshToken, headers) {
+    headers = headers || {};
+    const time = Util.dateFormat("YY-mm-ddTHH:MM:SS+00:00", new Date());
+    headers["x-client-time"] = time;
+    headers["x-client-hash"] = import_csharp15.Pamisu.Common.Util.GetMD5Hash(time + hashSecret);
+    const authHost = "https://oauth.secure.pixiv.net";
+    const url = authHost + "/auth/token";
+    const data = {
+      get_secure_url: "1",
+      client_id: clientId,
+      client_secret: clientSecret
+    };
+    data.grant_type = "refresh_token";
+    data.refresh_token = refreshToken || this.refreshToken;
+    const option = {
+      method: "POST",
+      headers,
+      formUrlencodedDatas: data
+    };
+    const result = await this.request(url, option, false);
+    if (!result || [200, 301, 302].indexOf(result.statusCode) == -1) {
+      console.error("Auth failed.");
+      if (result) {
+        console.log(`Status code: ${result.statusCode} Body: ${result.body}`);
+      }
+      return;
+    }
+    const obj = this.parse(result.body);
+    if (obj) {
+      this.userId = obj.user.id;
+      this.accessToken = obj.access_token;
+      this.refreshToken = obj.refresh_token;
+    }
+    return obj;
+  }
+  async illustDetail(illustId) {
+    const url = this.host + "/v1/illust/detail";
+    const option = {
+      method: "GET",
+      parameters: {
+        illust_id: illustId
+      }
+    };
+    const result = await this.request(url, option);
+    return this.parse(result.body);
+  }
+  async illustRecommended(args) {
+    args = args || {};
+    args = {
+      content_type: args.content_type || "illust",
+      max_bookmark_id_for_recommend: args.max_bookmark_id_for_recommend,
+      min_bookmark_id_for_recent_illust: args.min_bookmark_id_for_recent_illust,
+      offset: args.offset || 0,
+      include_ranking_illusts: args.include_ranking_illusts,
+      bookmark_illust_ids: args.bookmark_illust_ids,
+      include_privacy_policy: args.include_privacy_policy,
+      include_ranking_label: true,
+      filter: "for_ios"
+    };
+    const url = this.host + "/v1/illust/recommended";
+    const option = {
+      method: "GET",
+      parameters: args
+    };
+    const result = await this.request(url, option);
+    return this.parse(result.body);
+  }
+  async searchIllust(args) {
+    args = args || {};
+    args = {
+      word: args.word,
+      search_target: args.search_target || "partial_match_for_tags",
+      sort: args.sort || "date_desc",
+      duration: args.duration,
+      start_date: args.start_date,
+      end_date: args.end_date,
+      offset: args.offset || 0,
+      filter: "for_ios"
+    };
+    const url = this.host + "/v1/search/illust";
+    const option = {
+      method: "GET",
+      parameters: args
+    };
+    const result = await this.request(url, option);
+    return this.parse(result.body);
+  }
+};
+var PixivAppApi = _PixivAppApi;
+__publicField(PixivAppApi, "_instance");
+
+// src/common/settings.ts
+var import_csharp16 = require("csharp");
+var defaultConfig = {
+  refreshToken: "",
+  proxyHost: "",
+  proxyPort: 80,
+  collectorServer: "http://127.0.0.1:7007",
+  apiRequestInterval: 1e3
+};
+var Settings = class {
+  static get config() {
+    if (!this._config) {
+      const str = import_csharp16.UnityEngine.PlayerPrefs.GetString("config");
+      if (str)
+        this._config = JSON.parse(str);
+      else
+        this._config = defaultConfig;
+    }
+    return this._config;
+  }
+  static set config(value) {
+    const origin = this.config;
+    if (value.refreshToken)
+      origin.refreshToken = value.refreshToken;
+    if (value.collectorServer)
+      origin.collectorServer = value.collectorServer;
+    if (value.apiRequestInterval != null && !isNaN(value.apiRequestInterval))
+      origin.apiRequestInterval = Math.max(0, value.apiRequestInterval);
+    this._config = origin;
+    this.updateConfig();
+  }
+  static updateConfig() {
+    const str = JSON.stringify(this._config);
+    import_csharp16.UnityEngine.PlayerPrefs.SetString("config", str);
+  }
+  static updateProxySettings(proxy) {
+    let host, port;
+    if (proxy) {
+      const sp = proxy.split(":");
+      host = sp[0];
+      port = sp.length > 1 ? parseInt(sp[1]) : 80;
+      this.config.proxyHost = host;
+      this.config.proxyPort = port;
+      this.updateConfig();
+    }
+    PixivAppApi.instance.setProxy(this.config.proxyHost, this.config.proxyPort);
+    import_csharp16.Pxkore.FImageLoader.GetInstance().AddHeader("Referer", "https://www.pixiv.net");
+    import_csharp16.Pxkore.FImageLoader.GetInstance().SetProxy(this.config.proxyHost, this.config.proxyPort);
+  }
+};
+__publicField(Settings, "_config");
+
+// src/api/collector-api.ts
+var import_csharp17 = require("csharp");
+var import_puerts2 = require("puerts");
+var apiPrefix = "/api/v1";
+var _CollectorApi = class {
+  constructor() {
+    __publicField(this, "networkManager");
+    this.networkManager = import_csharp17.Pamisu.Common.NetworkManager.Instance;
+  }
+  static get instance() {
+    if (!this._instance)
+      this._instance = new _CollectorApi();
+    return this._instance;
+  }
+  get serverUrl() {
+    return Settings.config.collectorServer + apiPrefix;
+  }
+  async request(url, option = null) {
+    option = option || {};
+    const opt = Util.jsToCharp(option, (0, import_puerts2.$typeof)(import_csharp17.Pamisu.Common.RequestOption));
+    const result = await (0, import_puerts2.$promise)(this.networkManager.RequestAsync(url, opt));
+    if (result)
+      return result;
+    else
+      console.error("Request error: " + url);
+  }
+  parse(str) {
+    try {
+      return JSON.parse(str);
+    } catch (error) {
+      console.error("Json parse error.");
+      console.log(error);
+    }
+  }
+  async illustInfo(ids) {
+    const url = this.serverUrl + "/illust/info";
+    const body = {
+      breifMode: true,
+      ids
+    };
+    const option = {
+      method: "POST",
+      headers: {
+        ["Content-Type"]: "application/json"
+      },
+      body: JSON.stringify(body)
+    };
+    const result = await this.request(url, option);
+    if (result)
+      return this.parse(result.body);
+  }
+  async illustPut(illusts) {
+    const url = this.serverUrl + "/illust";
+    const option = {
+      method: "PUT",
+      headers: {
+        ["Content-Type"]: "application/json"
+      },
+      body: JSON.stringify(illusts)
+    };
+    const result = await this.request(url, option);
+    if (result)
+      return this.parse(result.body);
+  }
+  async illustDelete(ids) {
+    const url = this.serverUrl + "/illust";
+    const option = {
+      method: "DELETE",
+      headers: {
+        ["Content-Type"]: "application/json"
+      },
+      body: JSON.stringify(ids)
+    };
+    const result = await this.request(url, option);
+    if (result)
+      return this.parse(result.body);
+  }
+  async illustList(offsetOid) {
+    const url = this.serverUrl + "/illust/list";
+    const body = { offsetOid };
+    const option = {
+      method: "POST",
+      headers: {
+        ["Content-Type"]: "application/json"
+      },
+      body: JSON.stringify(body)
+    };
+    const result = await this.request(url, option);
+    if (result)
+      return this.parse(result.body);
+  }
+};
+var CollectorApi = _CollectorApi;
+__publicField(CollectorApi, "_instance");
+
+// src/ui/illust/base-collector-controller.ts
+var BaseCollectorContoller = class {
+  constructor() {
+    __publicField(this, "illusts");
+  }
+  completeData(illusts) {
+    for (const illust of illusts) {
+      illust.imageUrl = illust.image_urls.large;
+      const sp = illust.imageUrl.split("/");
+      illust.imageKey = sp[sp.length - 1];
+      illust.selected = false;
+    }
+  }
+  selectDataAt(index, isSelected) {
+    this.illusts[index].selected = isSelected;
+  }
+  clearSelection() {
+    this.illusts.forEach((elem) => {
+      elem.selected = false;
+    });
+    this.refreshView();
+  }
+  getDataAt(index) {
+    return this.illusts[index];
+  }
+  getItemNum() {
+    if (!this.illusts)
+      return 0;
+    return this.illusts.length;
+  }
+  async initCollection(illusts) {
+    const ids = [];
+    for (const illust of illusts) {
+      ids.push(illust.id);
+    }
+    const info = await CollectorApi.instance.illustInfo(ids);
+    if (!info || !info.data || info.data.length == 0) {
+      for (const illust of illusts) {
+        illust.collected = false;
+      }
+      return;
+    }
+    for (const illust of illusts) {
+      let exist = false;
+      for (const item of info.data) {
+        if (item.id == illust.id) {
+          exist = true;
+          break;
+        }
+      }
+      illust.collected = exist;
+    }
+  }
+  async collect() {
+    const toCollect = [];
+    for (const illust of this.illusts) {
+      if (illust.selected && !illust.collected)
+        toCollect.push(illust);
+    }
+    if (toCollect.length == 0) {
+      console.log("Nothing to collect.");
+      return;
+    }
+    const result = await CollectorApi.instance.illustPut(toCollect);
+    console.log("Illust collect result: " + result.msg);
+    await this.initCollection(toCollect);
+    this.clearSelection();
+    this.refreshView();
+  }
+  async delete() {
+    const toDelete = [];
+    for (const illust of this.illusts) {
+      if (illust.selected && illust.collected)
+        toDelete.push(illust);
+    }
+    if (toDelete.length == 0) {
+      console.log("Nothing to delete.");
+      return;
+    }
+    const ids = [];
+    toDelete.forEach((e) => {
+      ids.push(e.id);
+    });
+    const result = await CollectorApi.instance.illustDelete(ids);
+    console.log("Illust delete result: " + result.msg);
+    await this.initCollection(toDelete);
+    this.clearSelection();
+    this.refreshView();
+  }
+};
+
+// src/ui/illust/gallery-controller.ts
+var GalleryController = class extends BaseCollectorContoller {
+  constructor(view) {
+    super();
+    __publicField(this, "view");
+    __publicField(this, "dataType", 0 /* None */);
+    __publicField(this, "cancelToken");
+    __publicField(this, "nextUrl");
+    __publicField(this, "searchOption");
+    this.view = view;
+  }
+  refreshView() {
+    this.view.refresh();
+  }
+  async getRecommended(nextUrl) {
+    this.view.updateStatus(false);
+    if (this.dataType != 1 /* Recommended */ || !nextUrl) {
+      this.dataType = 1 /* Recommended */;
+      this.illusts = [];
+      this.refreshView();
+    }
+    const cancelToken = Util.generateToken();
+    this.cancelToken = cancelToken;
+    let args;
+    if (nextUrl) {
+      args = PixivAppApi.instance.parseQueryString(nextUrl);
+    }
+    const result = await PixivAppApi.instance.illustRecommended(args);
+    if (cancelToken != this.cancelToken) {
+      return;
+    }
+    this.nextUrl = result.next_url;
+    this.completeData(result.illusts);
+    await this.initCollection(result.illusts);
+    this.illusts.push(...result.illusts);
+    this.refreshView();
+  }
+  async search(nextUrl, option, numToFill = -1) {
+    let args;
+    if (nextUrl) {
+      args = PixivAppApi.instance.parseQueryString(nextUrl);
+    } else {
+      args = option || {};
+      if (!args.word) {
+        await this.getRecommended();
+        return;
+      }
+    }
+    if (this.dataType != 2 /* Search */ || !nextUrl) {
+      this.dataType = 2 /* Search */;
+      this.illusts = [];
+      this.refreshView();
+    }
+    const cancelToken = Util.generateToken();
+    this.cancelToken = cancelToken;
+    const result = await PixivAppApi.instance.searchIllust(args);
+    if (cancelToken != this.cancelToken) {
+      return;
+    }
+    this.nextUrl = result.next_url;
+    this.searchOption = option;
+    if (option.minBookmarks && option.minBookmarks > 0) {
+      const filtered = this.filterIllusts(result.illusts, option.minBookmarks);
+      if (numToFill == -1)
+        numToFill = 30;
+      if (this.nextUrl && filtered.length < numToFill) {
+        numToFill = numToFill - filtered.length;
+      } else {
+        numToFill = 0;
+      }
+      result.illusts = filtered;
+    }
+    this.completeData(result.illusts);
+    await this.initCollection(result.illusts);
+    this.illusts.push(...result.illusts);
+    this.refreshView();
+    let total = isNaN(args.offset) ? 0 : parseInt(args.offset);
+    total += 30;
+    this.view.updateStatus(true, total, this.illusts.length);
+    if (numToFill > 0) {
+      console.log(`Search results less than one page after filtering, num to fill: ${numToFill}`);
+      const interval = Settings.config.apiRequestInterval;
+      Util.sleep(interval).then(() => {
+        console.log("Slept");
+        this.search(this.nextUrl, this.searchOption, numToFill);
+      });
+    }
+  }
+  filterIllusts(illusts, minBookmarks) {
+    const r = new Array();
+    illusts.forEach((it) => {
+      if (it.total_bookmarks >= minBookmarks)
+        r.push(it);
+    });
+    return r;
+  }
+  async nextPage() {
+    if (!this.nextUrl)
+      return;
+    if (this.dataType == 1 /* Recommended */) {
+      await this.getRecommended(this.nextUrl);
+    } else if (this.dataType == 2 /* Search */) {
+      await this.search(this.nextUrl, this.searchOption);
+    }
+  }
+};
+
+// src/gen/ui/main/UI_IllustDetailScreen.ts
+var import_csharp18 = require("csharp");
+var UI_IllustDetailScreen = class extends import_csharp18.FairyGUI.GComponent {
+  constructor() {
+    super(...arguments);
+    __publicField(this, "m_Image");
+    __publicField(this, "m_Detail");
+    __publicField(this, "m_MenuBar");
+  }
+  static createInstance() {
+    const obj = import_csharp18.FairyGUI.UIPackage.CreateObject("main", "IllustDetailScreen");
+    return obj;
+  }
+  onConstruct() {
+    this.m_Image = this.GetChildAt(1);
+    this.m_Detail = this.GetChildAt(2);
+    this.m_MenuBar = this.GetChildAt(3);
+  }
+};
+__publicField(UI_IllustDetailScreen, "URL", "ui://paw0rq8sqvrviw");
+
+// src/ui/illust/illust-detail-screen.ts
+var IllustDetailScreen = class extends UI_IllustDetailScreen {
+  constructor() {
+    super(...arguments);
+    __publicField(this, "illust");
+    __publicField(this, "menubar");
+  }
+  onConstruct() {
+    super.onConstruct();
+    this.menubar = new MenuBar(this.m_MenuBar, 2 /* Back */);
+    this.m_MenuBar.m_Back.onClick.Set(() => {
+      UiMain.instance.navigator.navBack();
+    });
+  }
+  onNavTo(data) {
+    if (!data)
+      return;
+    this.illust = data;
+    this.m_Image.url = this.illust.imageUrl;
+    this.m_Detail.m_Title.text = this.illust.title;
+    this.m_Detail.m_Description.text = this.illust.caption;
+    let details = `ID: ${this.illust.id}
+User: ${this.illust.user.name}    Create Date: ${this.illust.create_date}
+Bookmarks: ${this.illust.total_bookmarks}    View: ${this.illust.total_view}
+Sanity Level: ${this.illust.sanity_level}    Pages: ${this.illust.page_count}`;
+    this.m_Detail.m_Details.text = details;
+    const tags = [];
+    this.illust.tags.forEach((tag) => {
+      tags.push(tag.name);
+      if (tag.translated_name)
+        tags.push(tag.translated_name);
+    });
+    const tagList = this.m_Detail.m_Tags;
+    tagList.RemoveChildrenToPool();
+    for (const tag of tags) {
+      const item = tagList.AddItemFromPool(UI_TagItem.URL);
+      item.m_title.text = tag;
+    }
+  }
+};
+
+// src/ui/illust/search-option-window.ts
+var import_csharp20 = require("csharp");
+
+// src/gen/ui/main/UI_SearchOptionWindow.ts
+var import_csharp19 = require("csharp");
+var UI_SearchOptionWindow = class extends import_csharp19.FairyGUI.GLabel {
+  constructor() {
+    super(...arguments);
+    __publicField(this, "m_Keywords");
+    __publicField(this, "m_Target1");
+    __publicField(this, "m_Order");
+    __publicField(this, "m_Offset");
+    __publicField(this, "m_MinBookMarks");
+    __publicField(this, "m_CancelButton");
+    __publicField(this, "m_ConfirmButton");
+  }
+  static createInstance() {
+    const obj = import_csharp19.FairyGUI.UIPackage.CreateObject("main", "SearchOptionWindow");
+    return obj;
+  }
+  onConstruct() {
+    this.m_Keywords = this.GetChildAt(3);
+    this.m_Target1 = this.GetChildAt(5);
+    this.m_Order = this.GetChildAt(7);
+    this.m_Offset = this.GetChildAt(9);
+    this.m_MinBookMarks = this.GetChildAt(12);
+    this.m_CancelButton = this.GetChildAt(15);
+    this.m_ConfirmButton = this.GetChildAt(16);
+  }
+};
+__publicField(UI_SearchOptionWindow, "URL", "ui://paw0rq8saapxjf");
+
+// src/ui/illust/search-option-window.ts
+var SearchOptionWindow = class extends UI_SearchOptionWindow {
+  constructor() {
+    super(...arguments);
+    __publicField(this, "window");
+    __publicField(this, "onApply");
+  }
+  onConstruct() {
+    super.onConstruct();
+    this.m_Offset.m_text.restrict = "[0-9]";
+    this.m_MinBookMarks.m_text.restrict = "[0-9]";
+    this.window = new import_csharp20.FairyGUI.Window();
+    this.window.contentPane = this;
+    this.window.Center();
+    this.window.modal = true;
+    this.m_CancelButton.onClick.Set(() => {
+      this.hide();
+    });
+    this.m_ConfirmButton.onClick.Set(() => {
+      const option = {
+        word: this.m_Keywords.m_text.text,
+        search_target: this.m_Target1.value,
+        sort: this.m_Order.value,
+        offset: parseInt(this.m_Offset.m_text.text),
+        minBookmarks: parseInt(this.m_MinBookMarks.m_text.text)
+      };
+      this.hide();
+      if (this.onApply)
+        this.onApply(option);
+    });
+  }
+  show() {
+    import_csharp20.FairyGUI.GRoot.inst.modalLayer.onClick.Set(() => {
+      import_csharp20.FairyGUI.GRoot.inst.modalLayer.onClick.Set(null);
+      this.hide();
+    });
+    this.window.Show();
+  }
+  hide() {
+    import_csharp20.FairyGUI.GRoot.inst.modalLayer.onClick.Set(null);
+    this.window.Hide();
+  }
+};
+
+// src/gen/ui/main/UI_GalleryScreen.ts
+var import_csharp21 = require("csharp");
+var UI_GalleryScreen = class extends import_csharp21.FairyGUI.GComponent {
+  constructor() {
+    super(...arguments);
+    __publicField(this, "m_ImageList");
+    __publicField(this, "m_MenuBar");
+    __publicField(this, "m_StatusBar");
+  }
+  static createInstance() {
+    const obj = import_csharp21.FairyGUI.UIPackage.CreateObject("main", "GalleryScreen");
+    return obj;
+  }
+  onConstruct() {
+    this.m_ImageList = this.GetChildAt(0);
+    this.m_MenuBar = this.GetChildAt(1);
+    this.m_StatusBar = this.GetChildAt(2);
+  }
+};
+__publicField(UI_GalleryScreen, "URL", "ui://paw0rq8s100ri0");
+
+// src/ui/illust/gallery-screen.ts
+var GalleryScreen = class extends UI_GalleryScreen {
+  constructor() {
+    super();
+    __publicField(this, "controller");
+    __publicField(this, "menubar");
+    __publicField(this, "imageList");
+    __publicField(this, "searchOptionWindow");
+    this.controller = new GalleryController(this);
+  }
+  onConstruct() {
+    super.onConstruct();
+    this.searchOptionWindow = SearchOptionWindow.createInstance();
+    this.searchOptionWindow.onApply = (option) => {
+      this.controller.search(null, option);
+    };
+    this.menubar = new MenuBar(this.m_MenuBar);
+    this.m_MenuBar.m_Search.onClick.Set(() => {
+      this.searchOptionWindow.show();
+    });
+    const collectionMenu = this.m_MenuBar.m_Collection;
+    collectionMenu.m_SelectAll.onClick.Set(() => {
+      this.selectCurrentPage();
+    });
+    collectionMenu.m_Clear.onClick.Set(() => {
+      this.controller.clearSelection();
+    });
+    collectionMenu.m_Collect.onClick.Set(() => {
+      this.controller.collect();
+    });
+    collectionMenu.m_Remove.onClick.Set(() => {
+      this.controller.delete();
+    });
+    this.imageList = this.m_ImageList.m_ImageList;
+    this.imageList.SetVirtual();
+    this.imageList.scrollPane.scrollStep /= 3;
+    this.imageList.scrollPane.onPullUpRelease.Set(() => {
+      this.onPullUpRefresh();
+    });
+    this.imageList.itemRenderer = (index, obj) => {
+      this.onRenderItem(index, obj);
+    };
+    this.controller.getRecommended();
+  }
+  onDispose() {
+    if (this.menubar) {
+      this.menubar.onDispose();
+    }
+  }
+  onNavTo(data) {
+  }
+  onRenderItem(index, obj) {
+    const item = obj;
+    const data = this.controller.getDataAt(index);
+    item.m_Image.url = data.imageUrl;
+    item.m_Image.onClick.Set(() => {
+      UiMain.instance.navigator.navTo(IllustDetailScreen.URL, data);
+    });
+    item.m_CollectedIcon.visible = data.collected ? data.collected : false;
+    item.m_SelectRadio.selected = data.selected ? data.selected : false;
+    item.m_SelectRadio.onChanged.Set(() => {
+      this.controller.getDataAt(index).selected = item.m_SelectRadio.selected;
+    });
+  }
+  async onPullUpRefresh() {
+    const footer = this.imageList.scrollPane.footer;
+    const c1 = footer.GetController("c1");
+    c1.selectedIndex = 1;
+    this.imageList.scrollPane.LockFooter(footer.sourceHeight);
+    await this.controller.nextPage();
+    c1.selectedIndex = 0;
+    this.imageList.scrollPane.LockFooter(0);
+  }
+  selectCurrentPage() {
+    for (let i = 0; i < this.imageList.numChildren; i++) {
+      const child = this.imageList.GetChildAt(i);
+      child.m_SelectRadio.selected = true;
+    }
+  }
+  refresh() {
+    this.imageList.numItems = this.controller.getItemNum();
+    this.imageList.RefreshVirtualList();
+  }
+  updateStatus(show, total, actual) {
+    this.m_StatusBar.visible = show;
+    if (show) {
+      this.m_StatusBar.m_title.text = `total: ${total} actual: ${actual}`;
+    }
+  }
+  setNoMore(noMore = true) {
+    const footer = this.imageList.scrollPane.footer;
+    const c2 = footer.GetController("c2");
+    c2.selectedIndex = noMore ? 1 : 0;
+  }
+};
+
+// src/gen/ui/main/UI_LoginScreen.ts
+var import_csharp22 = require("csharp");
+var UI_LoginScreen = class extends import_csharp22.FairyGUI.GComponent {
+  constructor() {
+    super(...arguments);
+    __publicField(this, "m_TokenInput");
+    __publicField(this, "m_LoginButton");
+    __publicField(this, "m_HintText");
+    __publicField(this, "m_Menu");
+  }
+  static createInstance() {
+    const obj = import_csharp22.FairyGUI.UIPackage.CreateObject("main", "LoginScreen");
+    return obj;
+  }
+  onConstruct() {
+    this.m_TokenInput = this.GetChildAt(1);
+    this.m_LoginButton = this.GetChildAt(2);
+    this.m_HintText = this.GetChildAt(3);
+    this.m_Menu = this.GetChildAt(5);
+  }
+};
+__publicField(UI_LoginScreen, "URL", "ui://paw0rq8sgzsdim");
+
+// src/ui/login/login-controller.ts
+var LoginController = class {
+  async login(refreshToken) {
+    const result = await PixivAppApi.instance.auth(refreshToken);
+    return result != null;
+  }
+};
+
+// src/ui/login/login-screen.ts
+var LoginScreen = class extends UI_LoginScreen {
+  constructor() {
+    super();
+    __publicField(this, "controller");
+    __publicField(this, "menubar");
+    this.controller = new LoginController();
+  }
+  onConstruct() {
+    super.onConstruct();
+    this.menubar = new MenuBar(this.m_Menu, 1 /* MenuOnly */);
+    const refreshToken = Settings.config.refreshToken;
+    this.m_TokenInput.m_text.text = refreshToken;
+    this.m_LoginButton.onClick.Set(() => {
+      this.onLoginButtonClick();
+    });
+  }
+  async onLoginButtonClick() {
+    const token = this.m_TokenInput.m_text.text;
+    if (!token)
+      return;
+    this.m_LoginButton.enabled = false;
+    this.m_HintText.text = "";
+    const b = await this.controller.login(token);
+    if (b) {
+      console.log("Login succeed!");
+      Settings.config = { refreshToken: token };
+      app.loggedIn = true;
+      UiMain.instance.navigator.navTo(GalleryScreen.URL, null, true);
+    } else {
+      this.m_HintText.text = "Login failed.";
+      this.m_LoginButton.enabled = true;
+    }
+  }
+  onDispose() {
+    if (this.menubar) {
+      this.menubar.onDispose();
+    }
+  }
+  onNavTo(data) {
+  }
+};
+
+// src/ui/settings-window.ts
+var import_csharp24 = require("csharp");
+
+// src/gen/ui/main/UI_SettingsWindow.ts
+var import_csharp23 = require("csharp");
+var UI_SettingsWindow = class extends import_csharp23.FairyGUI.GLabel {
+  constructor() {
+    super(...arguments);
+    __publicField(this, "m_ProxyInput");
+    __publicField(this, "m_CollectorServerInput");
+    __publicField(this, "m_RequestIntervalInput");
+    __publicField(this, "m_CancelButton");
+    __publicField(this, "m_ConfirmButton");
+  }
+  static createInstance() {
+    const obj = import_csharp23.FairyGUI.UIPackage.CreateObject("main", "SettingsWindow");
+    return obj;
+  }
+  onConstruct() {
+    this.m_ProxyInput = this.GetChildAt(3);
+    this.m_CollectorServerInput = this.GetChildAt(5);
+    this.m_RequestIntervalInput = this.GetChildAt(7);
+    this.m_CancelButton = this.GetChildAt(9);
+    this.m_ConfirmButton = this.GetChildAt(10);
+  }
+};
+__publicField(UI_SettingsWindow, "URL", "ui://paw0rq8smi4aj0");
+
+// src/ui/settings-window.ts
+var SettingsWindow = class extends UI_SettingsWindow {
+  constructor() {
+    super(...arguments);
+    __publicField(this, "window");
+  }
+  onConstruct() {
+    super.onConstruct();
+    this.window = new import_csharp24.FairyGUI.Window();
+    this.window.contentPane = this;
+    this.window.Center();
+    this.window.modal = true;
+    this.m_CancelButton.onClick.Set(() => {
+      this.hide();
+    });
+    this.m_ConfirmButton.onClick.Set(() => {
+      this.applyValues();
+      this.hide();
+    });
+  }
+  show() {
+    this.initValues();
+    this.window.Show();
+    import_csharp24.FairyGUI.GRoot.inst.modalLayer.onClick.Set(() => {
+      import_csharp24.FairyGUI.GRoot.inst.modalLayer.onClick.Set(null);
+      this.hide();
+    });
+  }
+  hide() {
+    import_csharp24.FairyGUI.GRoot.inst.modalLayer.onClick.Set(null);
+    this.window.Hide();
+  }
+  initValues() {
+    const config = Settings.config;
+    this.m_ProxyInput.m_text.text = config.proxyHost + ":" + config.proxyPort;
+    this.m_CollectorServerInput.m_text.text = config.collectorServer;
+    this.m_RequestIntervalInput.m_text.text = config.apiRequestInterval + "";
+  }
+  applyValues() {
+    Settings.updateProxySettings(this.m_ProxyInput.m_text.text);
+    Settings.config = {
+      collectorServer: this.m_CollectorServerInput.m_text.text,
+      apiRequestInterval: parseInt(this.m_RequestIntervalInput.m_text.text)
+    };
+  }
+};
+
+// src/ui/menu-popup.ts
+var MenuPopup = class extends UI_MenuPopup {
+  constructor() {
+    super(...arguments);
+    __publicField(this, "window");
+    __publicField(this, "_settingsWindow");
+  }
+  get settingsWindow() {
+    if (!this._settingsWindow)
+      this._settingsWindow = SettingsWindow.createInstance();
+    return this._settingsWindow;
+  }
+  onConstruct() {
+    super.onConstruct();
+    this.window = new import_csharp25.FairyGUI.Window();
+    this.window.contentPane = this;
+    this.window.modal = true;
+    this.m_list.onClickItem.Set((context) => {
+      if (context.data) {
+        const index = this.m_list.GetChildIndex(context.data);
+        if (index == 0) {
+          if (app.loggedIn)
+            UiMain.instance.navigator.navTo(GalleryScreen.URL, null, true);
+          else
+            UiMain.instance.navigator.navTo(LoginScreen.URL, null, true);
+        } else if (index == 1) {
+          UiMain.instance.navigator.navTo(CollectionScreen.URL, null, true);
+        } else if (index == 2) {
+          this.settingsWindow.show();
+        }
+      }
+      this.hide();
+    });
+  }
+  show(target) {
+    import_csharp25.FairyGUI.GRoot.inst.ShowPopup(this.window, target);
+  }
+  hide() {
+    import_csharp25.FairyGUI.GRoot.inst.HidePopup(this.window);
+  }
+  onDispose() {
+    if (this._settingsWindow)
+      this._settingsWindow.Dispose();
+  }
+};
+
+// src/ui/menu-bar.ts
+var MenuBar = class {
+  constructor(menu, mode = 0 /* Menu */, showSearch = true) {
+    __publicField(this, "menu");
+    __publicField(this, "_menuPopup");
+    this.menu = menu;
+    if (mode == 0 /* Menu */) {
+      this.menuMode(showSearch);
+    } else if (mode == 1 /* MenuOnly */) {
+      this.menuOnlyMode();
+    } else if (mode == 2 /* Back */) {
+      this.backMode();
+    }
+  }
+  get menuPopup() {
+    if (!this._menuPopup) {
+      this._menuPopup = MenuPopup.createInstance();
+    }
+    return this._menuPopup;
+  }
+  onDispose() {
+    if (this._menuPopup)
+      this._menuPopup.Dispose();
+  }
+  backMode() {
+    this.menu.m_Back.visible = true;
+    this.menu.m_Menu.visible = false;
+    this.menu.m_Search.visible = false;
+    this.menu.m_Collection.visible = false;
+  }
+  menuOnlyMode() {
+    this.menu.m_Back.visible = false;
+    this.menu.m_Menu.visible = true;
+    this.menu.m_Search.visible = false;
+    this.menu.m_Collection.visible = false;
+    this.registerMenuButton();
+  }
+  menuMode(showSearch = true) {
+    this.menu.m_Back.visible = false;
+    this.menu.m_Menu.visible = true;
+    this.menu.m_Search.visible = showSearch;
+    this.menu.m_Collection.visible = true;
+    this.registerMenuButton();
+    this.menu.m_Collection.m_Collection.onClick.Set(() => {
+      this.menu.m_Collection.m_c1.selectedIndex = 1;
+    });
+    this.menu.m_Collection.m_Close.onClick.Set(() => {
+      this.menu.m_Collection.m_c1.selectedIndex = 0;
+    });
+  }
+  registerMenuButton() {
+    this.menu.m_Menu.onClick.Set(() => {
+      this.menuPopup.show(this.menu.m_Menu);
+    });
+  }
+};
+
+// src/ui/illust/collection-controller.ts
+var CollectionController = class extends BaseCollectorContoller {
+  constructor(view) {
+    super();
+    __publicField(this, "view");
+    this.view = view;
+  }
+  refreshView() {
+    this.view.refresh();
+  }
+  completeData(illusts) {
+    for (const illust of illusts) {
+      const item = illust;
+      illust.imageUrl = item.urls.large;
+      const sp = illust.imageUrl.split("/");
+      illust.imageKey = sp[sp.length - 1];
+      illust.user = {
+        id: item.author_id,
+        name: item.author_name
+      };
+      const tags = new Array();
+      item.tags.forEach((it) => {
+        tags.push({ name: it });
+      });
+      illust.tags = tags;
+      illust.selected = false;
+      illust.collected = true;
+    }
+  }
+  async getCollection(offsetOid) {
+    if (!offsetOid) {
+      this.illusts = [];
+      this.refreshView();
+    }
+    const result = await CollectorApi.instance.illustList(offsetOid);
+    const illusts = result.data;
+    this.completeData(illusts);
+    this.illusts.push(...illusts);
+    this.refreshView();
+  }
+  async nextPage() {
+    if (this.illusts && this.illusts.length > 0) {
+      const oid = this.illusts[this.illusts.length - 1]._id;
+      await this.getCollection(oid);
+    }
+  }
+};
+
+// src/ui/illust/collection-screen.ts
+var CollectionScreen = class extends UI_CollectionScreen {
+  constructor() {
+    super();
+    __publicField(this, "controller");
+    __publicField(this, "menubar");
+    __publicField(this, "imageList");
+    this.controller = new CollectionController(this);
+  }
+  onConstruct() {
+    super.onConstruct();
+    this.menubar = new MenuBar(this.m_MenuBar, 0 /* Menu */, false);
+    const collectionMenu = this.m_MenuBar.m_Collection;
+    collectionMenu.m_SelectAll.onClick.Set(() => {
+      this.selectCurrentPage();
+    });
+    collectionMenu.m_Clear.onClick.Set(() => {
+      this.controller.clearSelection();
+    });
+    collectionMenu.m_Collect.onClick.Set(() => {
+      this.controller.collect();
+    });
+    collectionMenu.m_Remove.onClick.Set(() => {
+      this.controller.delete();
+    });
+    this.imageList = this.m_ImageList.m_ImageList;
+    this.imageList.SetVirtual();
+    this.imageList.scrollPane.scrollStep /= 3;
+    this.imageList.scrollPane.onPullUpRelease.Set(() => {
+      this.onPullUpRefresh();
+    });
+    this.imageList.itemRenderer = (index, obj) => {
+      this.onRenderItem(index, obj);
+    };
+    this.controller.getCollection();
+  }
+  onDispose() {
+    if (this.menubar) {
+      this.menubar.onDispose();
+    }
+  }
+  onNavTo(data) {
+  }
+  onRenderItem(index, obj) {
+    const item = obj;
+    const data = this.controller.getDataAt(index);
+    item.m_Image.url = data.imageUrl;
+    item.m_Image.onClick.Set(() => {
+      UiMain.instance.navigator.navTo(IllustDetailScreen.URL, data);
+    });
+    item.m_CollectedIcon.visible = data.collected ? data.collected : false;
+    item.m_SelectRadio.selected = data.selected ? data.selected : false;
+    item.m_SelectRadio.onChanged.Set(() => {
+      this.controller.getDataAt(index).selected = item.m_SelectRadio.selected;
+    });
+  }
+  async onPullUpRefresh() {
+    const footer = this.imageList.scrollPane.footer;
+    const c1 = footer.GetController("c1");
+    c1.selectedIndex = 1;
+    this.imageList.scrollPane.LockFooter(footer.sourceHeight);
+    await this.controller.nextPage();
+    c1.selectedIndex = 0;
+    this.imageList.scrollPane.LockFooter(0);
+  }
+  selectCurrentPage() {
+    for (let i = 0; i < this.imageList.numChildren; i++) {
+      const child = this.imageList.GetChildAt(i);
+      child.m_SelectRadio.selected = true;
+    }
+  }
+  refresh() {
+    this.imageList.numItems = this.controller.getItemNum();
+    this.imageList.RefreshVirtualList();
+  }
+  setNoMore(noMore = true) {
+    const footer = this.imageList.scrollPane.footer;
+    const c2 = footer.GetController("c2");
+    c2.selectedIndex = noMore ? 1 : 0;
+  }
+};
+
+// src/ui/navigator.ts
+var import_csharp27 = require("csharp");
+
+// src/gen/ui/main/UI_Navigator.ts
+var import_csharp26 = require("csharp");
+var UI_Navigator = class extends import_csharp26.FairyGUI.GComponent {
+  constructor() {
+    super(...arguments);
+    __publicField(this, "m_Container");
+  }
+  static createInstance() {
+    const obj = import_csharp26.FairyGUI.UIPackage.CreateObject("main", "Navigator");
+    return obj;
+  }
+  onConstruct() {
+    this.m_Container = this.GetChildAt(1);
+  }
+};
+__publicField(UI_Navigator, "URL", "ui://paw0rq8sgzsdin");
+
+// src/ui/navigator.ts
+var Navigator = class extends UI_Navigator {
+  constructor() {
+    super(...arguments);
+    __publicField(this, "navStack", []);
+    __publicField(this, "pool");
+  }
+  onConstruct() {
+    super.onConstruct();
+    this.makeFullScreen(this);
+    this.pool = new import_csharp27.FairyGUI.GObjectPool(this.container.cachedTransform);
+  }
+  onDispose() {
+    this.pool.Clear();
+  }
+  makeFullScreen(obj) {
+    obj.MakeFullScreen();
+    obj.AddRelation(import_csharp27.FairyGUI.GRoot.inst, import_csharp27.FairyGUI.RelationType.Size);
+  }
+  clearNavStack() {
+    while (this.navStack.length > 0) {
+      const obj = this.navStack.pop();
+      this.m_Container.RemoveChild(obj, true);
+    }
+  }
+  navTo(screenOrUrl, data, clearStack = false, singleTop = true) {
+    if (clearStack) {
+      this.clearNavStack();
+    }
+    let screen;
+    if (typeof screenOrUrl == "string") {
+      if (singleTop && this.navStack.length > 0) {
+        const top = this.navStack[this.navStack.length - 1];
+        if (top.resourceURL == screenOrUrl)
+          return;
+      }
+      screen = this.pool.GetObject(screenOrUrl);
+    } else {
+      if (singleTop && this.navStack.length > 0) {
+        const top = this.navStack[this.navStack.length - 1];
+        if (top.resourceURL == screenOrUrl.resourceURL)
+          return;
+      }
+      screen = screenOrUrl;
+    }
+    this.makeFullScreen(screen);
+    this.m_Container.AddChild(screen);
+    this.navStack.push(screen);
+    screen.onNavTo(data);
+  }
+  navBack(data, dispose = false) {
+    if (this.navStack.length > 0) {
+      const obj = this.navStack.pop();
+      this.m_Container.RemoveChild(obj, dispose);
+      if (!dispose)
+        this.pool.ReturnObject(obj);
+      if (this.navStack.length > 0) {
+        this.navStack[this.navStack.length - 1].onNavTo(data);
+      }
+    }
+  }
+};
+
+// src/ui/ui-binder.ts
+var UiBinder = class {
+  static bindAll() {
+    bind(UI_Dropdown_popup);
+    bind(UI_RefreshFooter);
+    bind(UI_InputField);
+    bind(UI_StatusBar);
+    bind(UI_IllustDetail);
+    bind(UI_TagItem);
+    bind(UI_MenuBar);
+    bind(UI_ImageList);
+    bind(UI_ImageItem);
+    bind(UI_CollectionMenu);
+    bind(Navigator);
+    bind(LoginScreen);
+    bind(MenuPopup);
+    bind(SettingsWindow);
+    bind(GalleryScreen);
+    bind(IllustDetailScreen);
+    bind(SearchOptionWindow);
+    bind(CollectionScreen);
+  }
+};
+
+// src/ui/ui-main.ts
+var _UiMain = class {
+  constructor() {
+    __publicField(this, "_navigator");
+  }
+  get navigator() {
+    return this._navigator;
+  }
+  static get instance() {
+    if (!this._instance)
+      this._instance = new _UiMain();
+    return this._instance;
+  }
+  async init() {
+    import_csharp28.FairyGUI.UIObjectFactory.SetLoaderExtension((0, import_puerts3.$typeof)(import_csharp28.Pxkore.PxkoreGLoader));
+    const assetManager = import_csharp28.Pamisu.Common.AssetManager.Instance;
+    await (0, import_puerts3.$promise)(assetManager.AddFGUIPackage("main"));
+    UiBinder.bindAll();
+    this._navigator = Navigator.createInstance();
+    import_csharp28.FairyGUI.GRoot.inst.SetContentScaleFactor(1280, 800, import_csharp28.FairyGUI.UIContentScaler.ScreenMatchMode.MatchWidthOrHeight);
+    import_csharp28.FairyGUI.GRoot.inst.AddChild(this._navigator);
+    this.showLogin();
+  }
+  showLogin() {
+    const loginScreen = LoginScreen.createInstance();
+    this.navigator.navTo(loginScreen);
+  }
+};
+var UiMain = _UiMain;
+__publicField(UiMain, "_instance");
+
+// src/app.ts
+var PxkoreApplication = class {
+  constructor() {
+    __publicField(this, "loggedIn", false);
+    UiMain.instance.init();
+    PixivAppApi.instance.setAddtionalHeaders({
+      "Accept-Language": "zh-cn"
+    });
+    Settings.updateProxySettings();
+  }
+};
+var app = new PxkoreApplication();
+module.exports = __toCommonJS(app_exports);
+// Annotate the CommonJS export names for ESM import in node:
+0 && (module.exports = {
+  app
+});
+//# sourceMappingURL=bundle.js.map

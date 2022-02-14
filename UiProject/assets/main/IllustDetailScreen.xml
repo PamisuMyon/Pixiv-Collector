@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<component size="1280,800" bgColorEnabled="true" bgColor="#0e171e">
+  <displayList>
+    <component id="n3_aapx" name="n3" src="aapxjs" fileName="Componets/Commons/ScreenBackground.xml" xy="0,0">
+      <relation target="" sidePair="width-width,height-height"/>
+    </component>
+    <loader id="n0_qvrv" name="Image" xy="0,0" size="826,800" url="ui://paw0rq8stkn4i3" align="center" vAlign="middle" fill="scale">
+      <relation target="" sidePair="height-height,left-left"/>
+      <relation target="n1_qvrv" sidePair="rightext-left"/>
+    </loader>
+    <component id="n1_qvrv" name="Detail" src="qvrviy" fileName="Componets/IllustDetail.xml" xy="830,0">
+      <relation target="" sidePair="width-width,height-height,right-right"/>
+    </component>
+    <component id="n2_qvrv" name="MenuBar" src="tkn4ic" fileName="Componets/Menu/MenuBar.xml" xy="0,0">
+      <relation target="" sidePair="left-left,top-top"/>
+    </component>
+  </displayList>
+</component>

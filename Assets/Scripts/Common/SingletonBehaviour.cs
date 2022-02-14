@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace PixivCollector
+namespace Pamisu.Common
 {
     /// <summary>
     /// MonoBehaviour单例基类
@@ -9,7 +9,6 @@ namespace PixivCollector
     {
         public static T Instance { get; protected set; }
 
-        [Tooltip("保持不销毁")]
         public bool dontDestroyOnLoad = true;
 
         protected virtual void Awake()

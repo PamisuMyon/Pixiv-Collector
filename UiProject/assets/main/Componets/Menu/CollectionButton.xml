@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<component size="64,64" extention="Button">
+  <controller name="button" pages="2,up,3,down" selected="0"/>
+  <displayList>
+    <component id="n2_tkn4" name="n2" src="tkn4ik" fileName="Componets/Commons/MenuButtonBackground.xml" xy="0,0" size="64,64">
+      <relation target="" sidePair="width-width,height-height,center-center,middle-middle"/>
+    </component>
+    <loader id="n0_tkn4" name="icon" xy="6,6" size="52,52" aspect="true" url="ui://paw0rq8segsyj6" align="center" vAlign="middle" fill="scale">
+      <gearColor controller="button" pages="3" values="#c8c8c8" default="#ffffff" tween="true" duration=".2"/>
+      <relation target="" sidePair="width-width%,height-height%,center-center,middle-middle"/>
+    </loader>
+  </displayList>
+  <Button/>
+</component>

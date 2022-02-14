@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<packageDescription id="paw0rq8s">
+  <resources>
+    <component id="100ri0" name="GalleryScreen.xml" path="/" exported="true"/>
+    <image id="tkn4i1" name="collected.png" path="/Images/"/>
+    <image id="tkn4i2" name="menu.png" path="/Images/"/>
+    <image id="tkn4i3" name="pic_placeholder.png" path="/Images/"/>
+    <image id="tkn4i4" name="search.png" path="/Images/"/>
+    <image id="tkn4i5" name="select.png" path="/Images/"/>
+    <image id="tkn4i6" name="unselect.png" path="/Images/"/>
+    <image id="tkn4i7" name="back.png" path="/Images/"/>
+    <image id="tkn4i8" name="close.png" path="/Images/"/>
+    <image id="tkn4i9" name="close1.png" path="/Images/"/>
+    <component id="tkn4ia" name="RadioButton.xml" path="/Componets/Commons/"/>
+    <component id="tkn4ib" name="ImageButton.xml" path="/Componets/Commons/"/>
+    <component id="tkn4ic" name="MenuBar.xml" path="/Componets/Menu/"/>
+    <component id="tkn4id" name="ImageList.xml" path="/Componets/"/>
+    <component id="tkn4ie" name="ImageItem.xml" path="/Componets/" exported="true"/>
+    <component id="tkn4if" name="SearchButton.xml" path="/Componets/Menu/"/>
+    <component id="tkn4ig" name="MenuButton.xml" path="/Componets/Menu/"/>
+    <component id="tkn4ih" name="CollectionMenu.xml" path="/Componets/Menu/"/>
+    <component id="tkn4ii" name="CollectionButton.xml" path="/Componets/Menu/"/>
+    <component id="tkn4ij" name="CloseButton.xml" path="/Componets/Menu/"/>
+    <component id="tkn4ik" name="MenuButtonBackground.xml" path="/Componets/Commons/"/>
+    <component id="tkn4il" name="MenuTextButton.xml" path="/Componets/Commons/"/>
+    <component id="gzsdim" name="LoginScreen.xml" path="/" exported="true"/>
+    <component id="gzsdin" name="Navigator.xml" path="/" exported="true"/>
+    <component id="gzsdio" name="InputBackground.xml" path="/Componets/Commons/"/>
+    <component id="gzsdiq" name="InputField.xml" path="/Componets/Commons/"/>
+    <image id="gzsdir" name="Background.jpg" path="/Images/"/>
+    <component id="gzsdis" name="ButtonBackground.xml" path="/Componets/Commons/"/>
+    <image id="gzsdit" name="BtnDefault.png" path="/Images/" scale="9grid" scale9grid="6,6,213,38"/>
+    <component id="gzsdiu" name="TextButton.xml" path="/Componets/Commons/"/>
+    <component id="ilq0iv" name="Container.xml" path="/Componets/Commons/"/>
+    <component id="qvrviw" name="IllustDetailScreen.xml" path="/" exported="true"/>
+    <component id="qvrvix" name="BackButton.xml" path="/Componets/Menu/"/>
+    <component id="qvrviy" name="IllustDetail.xml" path="/Componets/"/>
+    <component id="qvrviz" name="TagItem.xml" path="/Componets/" exported="true"/>
+    <component id="mi4aj0" name="SettingsWindow.xml" path="/" exported="true"/>
+    <component id="mi4aj1" name="DialogBackground.xml" path="/Componets/Commons/"/>
+    <component id="g4wrj2" name="RefreshFooter.xml" path="/Componets/Commons/"/>
+    <image id="g4wrj3" name="refresh.png" path="/Images/"/>
+    <image id="egsyj4" name="collection_add.png" path="/Images/"/>
+    <image id="egsyj5" name="collection_remove.png" path="/Images/"/>
+    <image id="egsyj6" name="collection.png" path="/Images/"/>
+    <image id="egsyj7" name="select_all.png" path="/Images/"/>
+    <image id="egsyj8" name="select_clear.png" path="/Images/"/>
+    <component id="aapxj9" name="SelectAllButton.xml" path="/Componets/Menu/"/>
+    <component id="aapxja" name="SelectClearButton.xml" path="/Componets/Menu/"/>
+    <component id="aapxjb" name="CollectionAddButton.xml" path="/Componets/Menu/"/>
+    <component id="aapxjc" name="CollectionRemoveButton.xml" path="/Componets/Menu/"/>
+    <component id="aapxjd" name="MenuBarDivider.xml" path="/Componets/Menu/"/>
+    <component id="aapxjf" name="SearchOptionWindow.xml" path="/" exported="true"/>
+    <component id="aapxjj" name="Dropdown_item.xml" path="/Componets/Commons/Dropdown/"/>
+    <component id="aapxjk" name="Dropdown_popup.xml" path="/Componets/Commons/Dropdown/"/>
+    <component id="aapxjl" name="Dropdown.xml" path="/Componets/Commons/Dropdown/"/>
+    <image id="aapxjm" name="down_arrow.png" path="/Images/"/>
+    <component id="aapxjr" name="MenuPopup.xml" path="/" exported="true"/>
+    <component id="aapxjs" name="ScreenBackground.xml" path="/Componets/Commons/"/>
+    <component id="qix0jt" name="StatusBar.xml" path="/Componets/"/>
+    <component id="o6gwju" name="CollectionScreen.xml" path="/" exported="true"/>
+  </resources>
+  <publish name="" genCode="true"/>
+</packageDescription>
