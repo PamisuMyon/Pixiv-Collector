@@ -70,4 +70,9 @@ export default class MenuBar {
             this.menuPopup.show(this.menu.m_Menu);
         });
     }
+
+    public onBackPressed() {
+        if (this._menuPopup)
+            this._menuPopup.onBackPressed();
+    }
 }

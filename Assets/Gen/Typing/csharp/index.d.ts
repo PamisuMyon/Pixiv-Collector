@@ -28189,6 +28189,8 @@ declare module 'csharp' {
         }
         class JsManager extends Pamisu.Common.SingletonBehaviour$1<Pxkore.JsManager>
         {
+            public jsUpdate : System.Action
+            public static GetInstance () : Pxkore.JsManager
             public constructor ()
         }
         class PxkoreGLoader extends FairyGUI.GLoader implements FairyGUI.IAnimationGear, FairyGUI.IEventDispatcher, FairyGUI.IColorGear

@@ -47,6 +47,10 @@ export default class SearchOptionWindow extends UI_SearchOptionWindow {
         this.window.Hide();
     }
 
+    public get isShowing() {
+        return this.window != null && this.window.isShowing;
+    }
+
 }
 
 export interface SearchOption {

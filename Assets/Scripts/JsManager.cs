@@ -1,3 +1,4 @@
+using System;
 using System.IO;
 using FairyGUI;
 using Pamisu.Common;
@@ -12,6 +13,10 @@ namespace Pxkore
         private bool enableDebug;
         
         private static JsEnv jsEnv;
+
+        public Action jsUpdate;
+
+        public static JsManager GetInstance() => Instance;
 
         protected override void Awake()
         {
@@ -52,11 +57,13 @@ namespace Pxkore
         private void Update()
         {
             jsEnv?.Tick();
+            jsUpdate?.Invoke();
         }
         
         void OnDestroy()
         {
             jsEnv?.Dispose();
+            jsUpdate = null;
         }
     }
 }

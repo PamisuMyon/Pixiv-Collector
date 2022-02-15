@@ -1,4 +1,6 @@
-import { FairyGUI } from "csharp";
+import { FairyGUI, UnityEngine } from "csharp";
+import { app } from "../app";
+import { Listener } from "../common/event-emitter";
 import UI_Navigator from "../gen/ui/main/UI_Navigator"
 import IScreen from "./iscreen";
 
@@ -8,16 +10,30 @@ export default class Navigator extends UI_Navigator {
 
     private navStack: Screen[] = [];
     private pool: FairyGUI.GObjectPool;
+    private updateStub: Listener;
 
     protected onConstruct(): void {
         super.onConstruct();
         this.makeFullScreen(this);
 
         this.pool = new FairyGUI.GObjectPool(this.container.cachedTransform);
+        this.updateStub = this.update.bind(this);
+        app.emitter.on('update', this.updateStub);
     }
 
     protected onDispose() {
         this.pool.Clear();
+        app.emitter.off('update', this.updateStub);
+    }
+
+    private update() {
+        if (UnityEngine.Input.GetButtonDown('Back')) {
+            if (this.navStack.length > 0) {
+                const top = this.navStack[this.navStack.length - 1];
+                if (top.onBackPressed)
+                    top.onBackPressed();
+            }
+        }
     }
 
     private makeFullScreen(obj: FairyGUI.GObject) {

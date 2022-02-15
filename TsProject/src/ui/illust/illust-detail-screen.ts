@@ -54,4 +54,8 @@ Sanity Level: ${this.illust.sanity_level}    Pages: ${this.illust.page_count}`;
         // TODO tag edit
     }
 
+    public onBackPressed(): void {
+        UiMain.instance.navigator.navBack();
+    }
+
 }

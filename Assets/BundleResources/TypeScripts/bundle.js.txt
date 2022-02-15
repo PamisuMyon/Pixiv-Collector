@@ -2244,7 +2244,7 @@ __export(app_exports, {
   app: () => app
 });
 
-// src/utils/source-map-support.ts
+// src/common/source-map-support.ts
 var csharp = require("csharp");
 var puerts = require("puerts");
 puerts.registerBuildinModule("path", {
@@ -2275,7 +2275,7 @@ puerts.registerBuildinModule("fs", {
 require_source_map_support().install();
 
 // src/ui/ui-main.ts
-var import_csharp28 = require("csharp");
+var import_csharp29 = require("csharp");
 var import_puerts3 = require("puerts");
 
 // src/gen/ui/main/fairygui.ts
@@ -2529,7 +2529,7 @@ var UI_CollectionScreen = class extends import_csharp12.FairyGUI.GComponent {
 __publicField(UI_CollectionScreen, "URL", "ui://paw0rq8so6gwju");
 
 // src/ui/menu-popup.ts
-var import_csharp25 = require("csharp");
+var import_csharp26 = require("csharp");
 
 // src/gen/ui/main/UI_MenuPopup.ts
 var import_csharp13 = require("csharp");
@@ -2547,6 +2547,9 @@ var UI_MenuPopup = class extends import_csharp13.FairyGUI.GLabel {
   }
 };
 __publicField(UI_MenuPopup, "URL", "ui://paw0rq8saapxjr");
+
+// src/ui/illust/gallery-screen.ts
+var import_csharp22 = require("csharp");
 
 // src/api/pixiv-app-api.ts
 var import_csharp15 = require("csharp");
@@ -3206,6 +3209,9 @@ Sanity Level: ${this.illust.sanity_level}    Pages: ${this.illust.page_count}`;
       item.m_title.text = tag;
     }
   }
+  onBackPressed() {
+    UiMain.instance.navigator.navBack();
+  }
 };
 
 // src/ui/illust/search-option-window.ts
@@ -3282,6 +3288,9 @@ var SearchOptionWindow = class extends UI_SearchOptionWindow {
     import_csharp20.FairyGUI.GRoot.inst.modalLayer.onClick.Set(null);
     this.window.Hide();
   }
+  get isShowing() {
+    return this.window != null && this.window.isShowing;
+  }
 };
 
 // src/gen/ui/main/UI_GalleryScreen.ts
@@ -3313,6 +3322,7 @@ var GalleryScreen = class extends UI_GalleryScreen {
     __publicField(this, "menubar");
     __publicField(this, "imageList");
     __publicField(this, "searchOptionWindow");
+    __publicField(this, "updateStub");
     this.controller = new GalleryController(this);
   }
   onConstruct() {
@@ -3348,13 +3358,31 @@ var GalleryScreen = class extends UI_GalleryScreen {
       this.onRenderItem(index, obj);
     };
     this.controller.getRecommended();
+    this.updateStub = this.update.bind(this);
+    app.emitter.on("update", this.updateStub);
   }
   onDispose() {
     if (this.menubar) {
       this.menubar.onDispose();
     }
+    app.emitter.off("update", this.updateStub);
   }
   onNavTo(data) {
+  }
+  onBackPressed() {
+    if (this.menubar)
+      this.menubar.onBackPressed();
+    if (this.searchOptionWindow && this.searchOptionWindow.isShowing) {
+      this.searchOptionWindow.hide();
+    }
+  }
+  update() {
+    if (import_csharp22.UnityEngine.Input.GetButtonDown("Collect")) {
+      this.controller.collect();
+    }
+    if (import_csharp22.UnityEngine.Input.GetButtonDown("Remove")) {
+      this.controller.delete();
+    }
   }
   onRenderItem(index, obj) {
     const item = obj;
@@ -3402,8 +3430,8 @@ var GalleryScreen = class extends UI_GalleryScreen {
 };
 
 // src/gen/ui/main/UI_LoginScreen.ts
-var import_csharp22 = require("csharp");
-var UI_LoginScreen = class extends import_csharp22.FairyGUI.GComponent {
+var import_csharp23 = require("csharp");
+var UI_LoginScreen = class extends import_csharp23.FairyGUI.GComponent {
   constructor() {
     super(...arguments);
     __publicField(this, "m_TokenInput");
@@ -3412,7 +3440,7 @@ var UI_LoginScreen = class extends import_csharp22.FairyGUI.GComponent {
     __publicField(this, "m_Menu");
   }
   static createInstance() {
-    const obj = import_csharp22.FairyGUI.UIPackage.CreateObject("main", "LoginScreen");
+    const obj = import_csharp23.FairyGUI.UIPackage.CreateObject("main", "LoginScreen");
     return obj;
   }
   onConstruct() {
@@ -3473,14 +3501,18 @@ var LoginScreen = class extends UI_LoginScreen {
   }
   onNavTo(data) {
   }
+  onBackPressed() {
+    if (this.menubar)
+      this.menubar.onBackPressed();
+  }
 };
 
 // src/ui/settings-window.ts
-var import_csharp24 = require("csharp");
+var import_csharp25 = require("csharp");
 
 // src/gen/ui/main/UI_SettingsWindow.ts
-var import_csharp23 = require("csharp");
-var UI_SettingsWindow = class extends import_csharp23.FairyGUI.GLabel {
+var import_csharp24 = require("csharp");
+var UI_SettingsWindow = class extends import_csharp24.FairyGUI.GLabel {
   constructor() {
     super(...arguments);
     __publicField(this, "m_ProxyInput");
@@ -3490,7 +3522,7 @@ var UI_SettingsWindow = class extends import_csharp23.FairyGUI.GLabel {
     __publicField(this, "m_ConfirmButton");
   }
   static createInstance() {
-    const obj = import_csharp23.FairyGUI.UIPackage.CreateObject("main", "SettingsWindow");
+    const obj = import_csharp24.FairyGUI.UIPackage.CreateObject("main", "SettingsWindow");
     return obj;
   }
   onConstruct() {
@@ -3511,7 +3543,7 @@ var SettingsWindow = class extends UI_SettingsWindow {
   }
   onConstruct() {
     super.onConstruct();
-    this.window = new import_csharp24.FairyGUI.Window();
+    this.window = new import_csharp25.FairyGUI.Window();
     this.window.contentPane = this;
     this.window.Center();
     this.window.modal = true;
@@ -3526,14 +3558,17 @@ var SettingsWindow = class extends UI_SettingsWindow {
   show() {
     this.initValues();
     this.window.Show();
-    import_csharp24.FairyGUI.GRoot.inst.modalLayer.onClick.Set(() => {
-      import_csharp24.FairyGUI.GRoot.inst.modalLayer.onClick.Set(null);
+    import_csharp25.FairyGUI.GRoot.inst.modalLayer.onClick.Set(() => {
+      import_csharp25.FairyGUI.GRoot.inst.modalLayer.onClick.Set(null);
       this.hide();
     });
   }
   hide() {
-    import_csharp24.FairyGUI.GRoot.inst.modalLayer.onClick.Set(null);
+    import_csharp25.FairyGUI.GRoot.inst.modalLayer.onClick.Set(null);
     this.window.Hide();
+  }
+  get isShowing() {
+    return this.window != null && this.window.isShowing;
   }
   initValues() {
     const config = Settings.config;
@@ -3564,7 +3599,7 @@ var MenuPopup = class extends UI_MenuPopup {
   }
   onConstruct() {
     super.onConstruct();
-    this.window = new import_csharp25.FairyGUI.Window();
+    this.window = new import_csharp26.FairyGUI.Window();
     this.window.contentPane = this;
     this.window.modal = true;
     this.m_list.onClickItem.Set((context) => {
@@ -3584,15 +3619,22 @@ var MenuPopup = class extends UI_MenuPopup {
       this.hide();
     });
   }
-  show(target) {
-    import_csharp25.FairyGUI.GRoot.inst.ShowPopup(this.window, target);
-  }
-  hide() {
-    import_csharp25.FairyGUI.GRoot.inst.HidePopup(this.window);
-  }
   onDispose() {
     if (this._settingsWindow)
       this._settingsWindow.Dispose();
+  }
+  show(target) {
+    import_csharp26.FairyGUI.GRoot.inst.ShowPopup(this.window, target);
+  }
+  hide() {
+    import_csharp26.FairyGUI.GRoot.inst.HidePopup(this.window);
+  }
+  onBackPressed() {
+    if (this._settingsWindow && this._settingsWindow.isShowing) {
+      this._settingsWindow.hide();
+    } else if (this.window && this.window.isShowing) {
+      this.hide();
+    }
   }
 };
 
@@ -3650,6 +3692,10 @@ var MenuBar = class {
     this.menu.m_Menu.onClick.Set(() => {
       this.menuPopup.show(this.menu.m_Menu);
     });
+  }
+  onBackPressed() {
+    if (this._menuPopup)
+      this._menuPopup.onBackPressed();
   }
 };
 
@@ -3784,17 +3830,17 @@ var CollectionScreen = class extends UI_CollectionScreen {
 };
 
 // src/ui/navigator.ts
-var import_csharp27 = require("csharp");
+var import_csharp28 = require("csharp");
 
 // src/gen/ui/main/UI_Navigator.ts
-var import_csharp26 = require("csharp");
-var UI_Navigator = class extends import_csharp26.FairyGUI.GComponent {
+var import_csharp27 = require("csharp");
+var UI_Navigator = class extends import_csharp27.FairyGUI.GComponent {
   constructor() {
     super(...arguments);
     __publicField(this, "m_Container");
   }
   static createInstance() {
-    const obj = import_csharp26.FairyGUI.UIPackage.CreateObject("main", "Navigator");
+    const obj = import_csharp27.FairyGUI.UIPackage.CreateObject("main", "Navigator");
     return obj;
   }
   onConstruct() {
@@ -3809,18 +3855,31 @@ var Navigator = class extends UI_Navigator {
     super(...arguments);
     __publicField(this, "navStack", []);
     __publicField(this, "pool");
+    __publicField(this, "updateStub");
   }
   onConstruct() {
     super.onConstruct();
     this.makeFullScreen(this);
-    this.pool = new import_csharp27.FairyGUI.GObjectPool(this.container.cachedTransform);
+    this.pool = new import_csharp28.FairyGUI.GObjectPool(this.container.cachedTransform);
+    this.updateStub = this.update.bind(this);
+    app.emitter.on("update", this.updateStub);
   }
   onDispose() {
     this.pool.Clear();
+    app.emitter.off("update", this.updateStub);
+  }
+  update() {
+    if (import_csharp28.UnityEngine.Input.GetButtonDown("Back")) {
+      if (this.navStack.length > 0) {
+        const top = this.navStack[this.navStack.length - 1];
+        if (top.onBackPressed)
+          top.onBackPressed();
+      }
+    }
   }
   makeFullScreen(obj) {
     obj.MakeFullScreen();
-    obj.AddRelation(import_csharp27.FairyGUI.GRoot.inst, import_csharp27.FairyGUI.RelationType.Size);
+    obj.AddRelation(import_csharp28.FairyGUI.GRoot.inst, import_csharp28.FairyGUI.RelationType.Size);
   }
   clearNavStack() {
     while (this.navStack.length > 0) {
@@ -3904,13 +3963,13 @@ var _UiMain = class {
     return this._instance;
   }
   async init() {
-    import_csharp28.FairyGUI.UIObjectFactory.SetLoaderExtension((0, import_puerts3.$typeof)(import_csharp28.Pxkore.PxkoreGLoader));
-    const assetManager = import_csharp28.Pamisu.Common.AssetManager.Instance;
+    import_csharp29.FairyGUI.UIObjectFactory.SetLoaderExtension((0, import_puerts3.$typeof)(import_csharp29.Pxkore.PxkoreGLoader));
+    const assetManager = import_csharp29.Pamisu.Common.AssetManager.Instance;
     await (0, import_puerts3.$promise)(assetManager.AddFGUIPackage("main"));
     UiBinder.bindAll();
     this._navigator = Navigator.createInstance();
-    import_csharp28.FairyGUI.GRoot.inst.SetContentScaleFactor(1280, 800, import_csharp28.FairyGUI.UIContentScaler.ScreenMatchMode.MatchWidthOrHeight);
-    import_csharp28.FairyGUI.GRoot.inst.AddChild(this._navigator);
+    import_csharp29.FairyGUI.GRoot.inst.SetContentScaleFactor(1280, 800, import_csharp29.FairyGUI.UIContentScaler.ScreenMatchMode.MatchWidthOrHeight);
+    import_csharp29.FairyGUI.GRoot.inst.AddChild(this._navigator);
     this.showLogin();
   }
   showLogin() {
@@ -3921,15 +3980,54 @@ var _UiMain = class {
 var UiMain = _UiMain;
 __publicField(UiMain, "_instance");
 
+// src/common/event-emitter.ts
+var EventEmitter = class {
+  constructor() {
+    __publicField(this, "map", /* @__PURE__ */ new Map());
+  }
+  on(eventName, listener) {
+    if (this.map.has(eventName)) {
+      this.map.get(eventName).push(listener);
+    } else {
+      this.map.set(eventName, [listener]);
+    }
+  }
+  off(eventName, listener) {
+    if (this.map.has(eventName)) {
+      const listeners = this.map.get(eventName);
+      listeners.splice(listeners.indexOf(listener) >>> 0, 1);
+    }
+  }
+  emit(eventName, ...args) {
+    if (this.map.has(eventName)) {
+      this.map.get(eventName).forEach((it) => {
+        it(args);
+      });
+    }
+  }
+};
+
 // src/app.ts
+var import_csharp30 = require("csharp");
 var PxkoreApplication = class {
   constructor() {
+    __publicField(this, "_emitter");
     __publicField(this, "loggedIn", false);
+    const manager = import_csharp30.Pxkore.JsManager.GetInstance();
+    manager.jsUpdate = this.update.bind(this);
     UiMain.instance.init();
     PixivAppApi.instance.setAddtionalHeaders({
       "Accept-Language": "zh-cn"
     });
     Settings.updateProxySettings();
+  }
+  get emitter() {
+    if (!this._emitter)
+      this._emitter = new EventEmitter();
+    return this._emitter;
+  }
+  update() {
+    this.emitter.emit("update");
   }
 };
 var app = new PxkoreApplication();

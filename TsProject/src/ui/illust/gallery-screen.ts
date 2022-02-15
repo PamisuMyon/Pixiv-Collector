@@ -1,4 +1,4 @@
-import { FairyGUI } from "csharp";
+import { FairyGUI, UnityEngine } from "csharp";
 import UI_ImageItem from "../../gen/ui/main/UI_ImageItem";
 import MenuBar from "../menu-bar";
 import GalleryController from "./gallery-controller";
@@ -7,6 +7,8 @@ import UiMain from "../ui-main";
 import IScreen from "../iscreen";
 import SearchOptionWindow from "./search-option-window";
 import UI_GalleryScreen from "../../gen/ui/main/UI_GalleryScreen";
+import { Listener } from "../../common/event-emitter";
+import { app } from "../../app";
 
 export default class GalleryScreen extends UI_GalleryScreen implements IScreen {
 
@@ -14,6 +16,7 @@ export default class GalleryScreen extends UI_GalleryScreen implements IScreen {
     private menubar: MenuBar;
     private imageList: FairyGUI.GList;
     private searchOptionWindow: SearchOptionWindow;
+    private updateStub: Listener;
 
     constructor() {
         super();
@@ -61,15 +64,37 @@ export default class GalleryScreen extends UI_GalleryScreen implements IScreen {
         };
 
         this.controller.getRecommended();
+
+        this.updateStub = this.update.bind(this);
+        app.emitter.on('update', this.updateStub);
     }
 
     protected onDispose() {
         if (this.menubar) {
             this.menubar.onDispose();
         }
+        app.emitter.off('update', this.updateStub);
     }
 
     public onNavTo(data: any): void {
+    }
+
+    public onBackPressed(): void {
+        if (this.menubar)
+            this.menubar.onBackPressed();
+        if (this.searchOptionWindow
+            && this.searchOptionWindow.isShowing) {
+            this.searchOptionWindow.hide();
+        }
+    }
+
+    private update() {
+        if (UnityEngine.Input.GetButtonDown('Collect')) {
+            this.controller.collect();
+        }
+        if (UnityEngine.Input.GetButtonDown('Remove')) {
+            this.controller.delete();
+        }
     }
 
     private onRenderItem(index: number, obj: FairyGUI.GObject) {

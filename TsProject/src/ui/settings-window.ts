@@ -35,6 +35,10 @@ export default class SettingsWindow extends UI_SettingsWindow {
         this.window.Hide();
     }
 
+    public get isShowing() {
+        return this.window != null && this.window.isShowing;
+    }
+
     private initValues() {
         const config = Settings.config;
         this.m_ProxyInput.m_text.text = config.proxyHost + ':' + config.proxyPort;

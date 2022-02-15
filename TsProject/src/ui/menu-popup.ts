@@ -41,6 +41,11 @@ export default class MenuPopup extends UI_MenuPopup {
         });
     }
 
+    protected onDispose() {
+        if (this._settingsWindow)
+            this._settingsWindow.Dispose();
+    }
+
     public show(target: FairyGUI.GObject) {
         FairyGUI.GRoot.inst.ShowPopup(this.window, target);
     }
@@ -49,9 +54,12 @@ export default class MenuPopup extends UI_MenuPopup {
         FairyGUI.GRoot.inst.HidePopup(this.window);
     }
 
-    protected onDispose() {
-        if (this._settingsWindow)
-            this._settingsWindow.Dispose();
+    public onBackPressed() {
+        if (this._settingsWindow && this._settingsWindow.isShowing) {
+            this._settingsWindow.hide();
+        } else if (this.window && this.window.isShowing) {
+            this.hide();
+        }
     }
     
 }
