@@ -33,20 +33,19 @@ export default class GalleryScreen extends UI_GalleryScreen implements IScreen {
 
         // menu actions
         this.menubar = new MenuBar(this.m_MenuBar);
-        this.m_MenuBar.m_Search.onClick.Set(() => {
+        this.menubar.search.onClick.Set(() => {
             this.searchOptionWindow.show();
         });
-        const collectionMenu = this.m_MenuBar.m_Collection;
-        collectionMenu.m_SelectAll.onClick.Set(() => {
+        this.menubar.selectAll.onClick.Set(() => {
             this.selectCurrentPage();
         });
-        collectionMenu.m_Clear.onClick.Set(() => {
+        this.menubar.clear.onClick.Set(() => {
             this.controller.clearSelection();
         });
-        collectionMenu.m_Collect.onClick.Set(() => {
+        this.menubar.collect.onClick.Set(() => {
             this.controller.collect();
         });
-        collectionMenu.m_Remove.onClick.Set(() => {
+        this.menubar.remove.onClick.Set(() => {
             this.controller.delete();
         });
 
@@ -137,7 +136,8 @@ export default class GalleryScreen extends UI_GalleryScreen implements IScreen {
     public updateStatus(show: boolean, total?: number, actual?: number) {
         this.m_StatusBar.visible = show;
         if (show) {
-            this.m_StatusBar.m_title.text = `total: ${total} actual: ${actual}`;
+            this.m_StatusBar.m_total.text = total.toString();
+            this.m_StatusBar.m_actual.text = actual.toString();
         }
     }
 

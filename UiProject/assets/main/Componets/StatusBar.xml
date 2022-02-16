@@ -1,11 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<component size="212,32">
+<component size="102,58">
   <displayList>
-    <component id="n1_qix0" name="n1" src="tkn4ik" fileName="Componets/Commons/MenuButtonBackground.xml" xy="0,0" size="212,32">
-      <relation target="" sidePair="width-width,height-height"/>
-    </component>
-    <text id="n2_qix0" name="title" xy="0,0" size="212,32" fontSize="18" color="#ffffff" align="right" vAlign="middle" autoSize="shrink" autoClearText="true" text="total: 9999  actual: 9999">
-      <relation target="" sidePair="width-width,height-height"/>
-    </text>
+    <image id="n4_nhm2" name="n4" src="nhm2jz" fileName="Images/status_bg.png" xy="0,0" size="102,58"/>
+    <image id="n5_nhm2" name="n5" src="nhm2k0" fileName="Images/image_icon.png" xy="19,9" size="20,20" aspect="true"/>
+    <image id="n6_nhm2" name="n6" src="nhm2k1" fileName="Images/filter.png" xy="22,32" size="16,16" aspect="true"/>
+    <text id="n2_qix0" name="total" xy="43,4" size="56,26" fontSize="18" color="#ffffff" vAlign="middle" autoSize="shrink" autoClearText="true" text="9999"/>
+    <text id="n8_nhm2" name="actual" xy="43,26" size="56,26" fontSize="18" color="#ffffff" vAlign="middle" autoSize="shrink" autoClearText="true" text="9999"/>
   </displayList>
 </component>

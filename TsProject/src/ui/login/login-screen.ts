@@ -23,19 +23,19 @@ export default class LoginScreen extends UI_LoginScreen implements IScreen {
         // TODO auto login
         // fill refresh token input
         const refreshToken = Settings.config.refreshToken;
-        this.m_TokenInput.m_text.text = refreshToken;
+        this.m_Panel.m_TokenInput.m_text.text = refreshToken;
 
-        this.m_LoginButton.onClick.Set(() => {
+        this.m_Panel.m_LoginButton.onClick.Set(() => {
             this.onLoginButtonClick();
         });
     }
 
     private async onLoginButtonClick() {
-        const token = this.m_TokenInput.m_text.text
+        const token = this.m_Panel.m_TokenInput.m_text.text
         if (!token)
             return;
-        this.m_LoginButton.enabled = false;
-        this.m_HintText.text = '';
+        this.m_Panel.m_LoginButton.enabled = false;
+        this.m_Panel.m_HintText.text = '';
         const b = await this.controller.login(token);
         if (b) {
             console.log('Login succeed!');
@@ -45,8 +45,8 @@ export default class LoginScreen extends UI_LoginScreen implements IScreen {
             app.loggedIn = true;
             UiMain.instance.navigator.navTo(GalleryScreen.URL, null, true);
         } else {
-            this.m_HintText.text = 'Login failed.'
-            this.m_LoginButton.enabled = true;
+            this.m_Panel.m_HintText.text = 'Login failed.'
+            this.m_Panel.m_LoginButton.enabled = true;
         }
     }
 

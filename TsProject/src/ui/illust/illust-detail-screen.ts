@@ -8,13 +8,11 @@ import UiMain from "../ui-main";
 export default class IllustDetailScreen extends UI_IllustDetailScreen implements IScreen {
 
     private illust: Illust;
-    private menubar: MenuBar;
 
     protected onConstruct(): void {
         super.onConstruct();
-        // menu actions
-        this.menubar = new MenuBar(this.m_MenuBar, MenuMode.Back);
-        this.m_MenuBar.m_Back.onClick.Set(() => {
+        
+        this.m_Back.onClick.Set(() => {
             UiMain.instance.navigator.navBack();
         });
     }
@@ -31,7 +29,7 @@ export default class IllustDetailScreen extends UI_IllustDetailScreen implements
         this.m_Detail.m_Title.text = this.illust.title;
         this.m_Detail.m_Description.text = this.illust.caption;
         let details = 
-`ID: ${this.illust.id}
+`ID: ${this.illust.id}    Type: ${this.illust.type}
 User: ${this.illust.user.name}    Create Date: ${this.illust.create_date}
 Bookmarks: ${this.illust.total_bookmarks}    View: ${this.illust.total_view}
 Sanity Level: ${this.illust.sanity_level}    Pages: ${this.illust.page_count}`;

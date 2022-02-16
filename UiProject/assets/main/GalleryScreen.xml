@@ -4,11 +4,11 @@
     <component id="n0_tkn4" name="ImageList" src="tkn4id" fileName="Componets/ImageList.xml" xy="0,0" size="1280,800">
       <relation target="" sidePair="width-width,height-height"/>
     </component>
-    <component id="n1_tkn4" name="MenuBar" src="tkn4ic" fileName="Componets/Menu/MenuBar.xml" xy="0,0" size="300,64" aspect="true">
-      <relation target="" sidePair="left-left,top-top"/>
+    <component id="n2_qix0" name="StatusBar" src="qix0jt" fileName="Componets/StatusBar.xml" xy="1178,681">
+      <relation target="" sidePair="right-right,bottom-bottom"/>
     </component>
-    <component id="n2_qix0" name="StatusBar" src="qix0jt" fileName="Componets/StatusBar.xml" xy="1068,0">
-      <relation target="" sidePair="right-right,top-top"/>
+    <component id="n3_fus5" name="MenuBar" src="fus5jv" fileName="Componets/Menu/MenuBar.xml" xy="400,0">
+      <relation target="" sidePair="center-center,top-top"/>
     </component>
   </displayList>
 </component>

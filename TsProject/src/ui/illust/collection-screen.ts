@@ -22,17 +22,16 @@ export default class CollectionScreen extends UI_CollectionScreen implements ISc
         super.onConstruct();
         // menu actions
         this.menubar = new MenuBar(this.m_MenuBar, MenuMode.Menu, false);
-        const collectionMenu = this.m_MenuBar.m_Collection;
-        collectionMenu.m_SelectAll.onClick.Set(() => {
+        this.menubar.selectAll.onClick.Set(() => {
             this.selectCurrentPage();
         });
-        collectionMenu.m_Clear.onClick.Set(() => {
+        this.menubar.clear.onClick.Set(() => {
             this.controller.clearSelection();
         });
-        collectionMenu.m_Collect.onClick.Set(() => {
+        this.menubar.collect.onClick.Set(() => {
             this.controller.collect();
         });
-        collectionMenu.m_Remove.onClick.Set(() => {
+        this.menubar.remove.onClick.Set(() => {
             this.controller.delete();
         });
 

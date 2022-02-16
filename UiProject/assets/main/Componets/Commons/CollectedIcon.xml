@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<component size="54,54">
+  <displayList>
+    <graph id="n0_nhm2" name="n0" xy="0,0" size="54,54" aspect="true" type="rect" lineSize="0" fillColor="#cc222222" corner="10">
+      <relation target="" sidePair="height-height,right-right"/>
+    </graph>
+  </displayList>
+</component>

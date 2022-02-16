@@ -13,7 +13,6 @@
     <image id="tkn4i9" name="close1.png" path="/Images/"/>
     <component id="tkn4ia" name="RadioButton.xml" path="/Componets/Commons/"/>
     <component id="tkn4ib" name="ImageButton.xml" path="/Componets/Commons/"/>
-    <component id="tkn4ic" name="MenuBar.xml" path="/Componets/Menu/"/>
     <component id="tkn4id" name="ImageList.xml" path="/Componets/"/>
     <component id="tkn4ie" name="ImageItem.xml" path="/Componets/" exported="true"/>
     <component id="tkn4if" name="SearchButton.xml" path="/Componets/Menu/"/>
@@ -59,6 +58,13 @@
     <component id="aapxjs" name="ScreenBackground.xml" path="/Componets/Commons/"/>
     <component id="qix0jt" name="StatusBar.xml" path="/Componets/"/>
     <component id="o6gwju" name="CollectionScreen.xml" path="/" exported="true"/>
+    <component id="fus5jv" name="MenuBar.xml" path="/Componets/Menu/"/>
+    <image id="fus5jw" name="menu_bar_bg.png" path="/Images/" scale="9grid" scale9grid="16,2,208,94"/>
+    <component id="nhm2jx" name="CollectedIcon.xml" path="/Componets/Commons/"/>
+    <component id="nhm2jy" name="LoginPanel.xml" path="/Componets/"/>
+    <image id="nhm2jz" name="status_bg.png" path="/Images/" scale="9grid" scale9grid="25,23,45,17"/>
+    <image id="nhm2k0" name="image_icon.png" path="/Images/"/>
+    <image id="nhm2k1" name="filter.png" path="/Images/"/>
   </resources>
   <publish name="" genCode="true"/>
 </packageDescription>

@@ -4,7 +4,6 @@
  */
 
 import { bind } from "../gen/ui/main/fairygui";
-import UI_CollectionMenu from "../gen/ui/main/UI_CollectionMenu";
 import UI_Dropdown_popup from "../gen/ui/main/UI_Dropdown_popup";
 import UI_IllustDetail from "../gen/ui/main/UI_IllustDetail";
 import UI_ImageItem from "../gen/ui/main/UI_ImageItem";
@@ -21,8 +20,8 @@ import SearchOptionWindow from "./illust/search-option-window";
 import LoginScreen from "./login/login-screen";
 import Navigator from "./navigator";
 import SettingsWindow from "./settings-window";
-import UI_MenuPopup from "../gen/ui/main/UI_MenuPopup";
 import MenuPopup from "./menu-popup";
+import UI_LoginPanel from "../gen/ui/main/UI_LoginPanel";
 
 export default class UiBinder {
     public static bindAll() {
@@ -35,6 +34,7 @@ export default class UiBinder {
 		// bind(UI_Navigator);
 		bind(UI_InputField);
 		// bind(UI_SettingsWindow);
+		bind(UI_LoginPanel);
 		bind(UI_StatusBar);
 		// bind(UI_IllustDetailScreen);
 		bind(UI_IllustDetail);
@@ -42,7 +42,6 @@ export default class UiBinder {
 		bind(UI_MenuBar);
 		bind(UI_ImageList);
 		bind(UI_ImageItem);
-		bind(UI_CollectionMenu);
 
         // extend classes
 		bind(Navigator);

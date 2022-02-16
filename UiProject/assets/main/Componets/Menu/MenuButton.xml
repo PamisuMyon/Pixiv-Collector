@@ -5,7 +5,7 @@
     <component id="n2_tkn4" name="n2" src="tkn4ik" fileName="Componets/Commons/MenuButtonBackground.xml" xy="0,0" size="64,64">
       <relation target="" sidePair="width-width,height-height,center-center,middle-middle"/>
     </component>
-    <loader id="n0_tkn4" name="icon" xy="4,4" size="55,55" aspect="true" url="ui://paw0rq8stkn4i2" align="center" vAlign="middle" fill="scale">
+    <loader id="n0_tkn4" name="icon" xy="9,9" size="44,44" aspect="true" url="ui://paw0rq8stkn4i2" align="center" vAlign="middle" fill="scale">
       <gearColor controller="button" pages="3" values="#c8c8c8" default="#ffffff" tween="true" duration=".2"/>
       <relation target="" sidePair="width-width%,height-height%,center-center,middle-middle"/>
     </loader>

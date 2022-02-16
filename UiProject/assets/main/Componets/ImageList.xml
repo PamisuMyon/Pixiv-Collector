@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <component size="1280,800">
   <displayList>
-    <list id="n0_tkn4" name="ImageList" xy="0,0" size="1280,800" layout="flow_hz" selectionMode="none" overflow="scroll" ptrRes=",ui://paw0rq8sg4wrj2" lineItemCount="4" defaultItem="ui://paw0rq8stkn4ie" autoItemSize="true" align="center" vAlign="middle" autoClearItems="true" scrollItemToViewOnClick="false">
+    <list id="n0_tkn4" name="ImageList" xy="7,0" size="1266,800" layout="flow_hz" selectionMode="none" overflow="scroll" ptrRes=",ui://paw0rq8sg4wrj2" lineGap="14" colGap="14" lineItemCount="4" defaultItem="ui://paw0rq8stkn4ie" autoItemSize="true" align="center" vAlign="middle" autoClearItems="true" scrollItemToViewOnClick="false">
       <relation target="" sidePair="width-width,height-height"/>
       <item/>
       <item/>

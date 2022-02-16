@@ -9,10 +9,8 @@
       <relation target="n1_qvrv" sidePair="rightext-left"/>
     </loader>
     <component id="n1_qvrv" name="Detail" src="qvrviy" fileName="Componets/IllustDetail.xml" xy="830,0">
-      <relation target="" sidePair="width-width,height-height,right-right"/>
+      <relation target="" sidePair="height-height,right-right"/>
     </component>
-    <component id="n2_qvrv" name="MenuBar" src="tkn4ic" fileName="Componets/Menu/MenuBar.xml" xy="0,0">
-      <relation target="" sidePair="left-left,top-top"/>
-    </component>
+    <component id="n4_fus5" name="Back" src="qvrvix" fileName="Componets/Menu/BackButton.xml" xy="0,0"/>
   </displayList>
 </component>

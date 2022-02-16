@@ -96,7 +96,10 @@ namespace Pxkore
 
         public void AddHeader(string key, string value)
         {
-            additionalHeaders.Add(key, value);
+            if (additionalHeaders.ContainsKey(key))
+                additionalHeaders[key] = value;
+            else 
+                additionalHeaders.Add(key, value);
         }
 
         public void ClearHeaders()

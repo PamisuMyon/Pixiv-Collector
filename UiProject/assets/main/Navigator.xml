@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <component size="1280,800">
   <displayList>
-    <image id="n2_qvrv" name="n2" src="gzsdir" fileName="Images/Background.jpg" xy="0,0" size="1280,800">
+    <component id="n3_nhm2" name="n3" src="aapxjs" fileName="Componets/Commons/ScreenBackground.xml" xy="0,0" size="1280,800">
       <relation target="" sidePair="width-width,height-height"/>
-    </image>
+    </component>
     <component id="n1_ilq0" name="Container" src="ilq0iv" fileName="Componets/Commons/Container.xml" xy="0,0" size="1280,800">
       <relation target="" sidePair="width-width,height-height"/>
     </component>

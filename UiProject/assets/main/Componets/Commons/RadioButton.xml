@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <component size="128,128" extention="Button">
-  <controller name="button" pages="0,up,1,down" selected="0"/>
+  <controller name="button" pages="0,up,1,down" selected="1"/>
   <displayList>
-    <loader id="n0_tkn4" name="n0" xy="0,0" size="128,128" aspect="true" url="ui://paw0rq8stkn4i6" align="right" vAlign="middle" fill="scale">
+    <loader id="n0_tkn4" name="n0" xy="0,0" size="128,128" aspect="true" alpha="0" url="ui://paw0rq8stkn4i6" align="right" vAlign="middle" fill="scale" color="#222222">
       <gearDisplay controller="button" pages="0"/>
-      <relation target="" sidePair="height-height%,middle-middle%,right-right"/>
+      <relation target="" sidePair="height-height,middle-middle,right-right"/>
     </loader>
-    <loader id="n1_tkn4" name="n1" xy="0,0" size="128,128" aspect="true" url="ui://paw0rq8stkn4i5" align="right" vAlign="middle" fill="scale">
+    <loader id="n1_tkn4" name="n1" xy="19,19" size="90,90" aspect="true" url="ui://paw0rq8stkn4i5" align="right" vAlign="middle" fill="scale">
       <gearDisplay controller="button" pages="1"/>
-      <relation target="" sidePair="height-height%,middle-middle%,right-right"/>
+      <relation target="" sidePair="height-height,middle-middle,right-right"/>
     </loader>
   </displayList>
   <Button mode="Check"/>

@@ -1,15 +1,22 @@
+import { FairyGUI } from "csharp";
 import UI_MenuBar from "../gen/ui/main/UI_MenuBar";
 import MenuPopup from "./menu-popup";
 
 export enum MenuMode {
     Menu,
-    MenuOnly,
-    Back
+    MenuOnly
 }
 
 export default class MenuBar {
 
-    private menu: UI_MenuBar;
+    private bar: UI_MenuBar;
+    public menu: FairyGUI.GButton;
+    public actions: FairyGUI.GList;
+    public search: FairyGUI.GObject;
+    public selectAll: FairyGUI.GObject;
+    public clear: FairyGUI.GObject;
+    public collect: FairyGUI.GObject;
+    public remove: FairyGUI.GObject;
 
     private _menuPopup: MenuPopup;
     public get menuPopup() {
@@ -19,14 +26,20 @@ export default class MenuBar {
         return this._menuPopup;
     }
 
-    constructor(menu: UI_MenuBar, mode: MenuMode = MenuMode.Menu, showSearch = true) {
-        this.menu = menu;
+    constructor(menubar: UI_MenuBar, mode: MenuMode = MenuMode.Menu, showSearch = true) {
+        this.bar = menubar;
+        this.menu = menubar.m_Menu;
+        this.actions = menubar.m_Actions;
+        this.search = menubar.m_Actions.GetChild('Search');
+        this.selectAll = menubar.m_Actions.GetChild('SelectAll');
+        this.clear = menubar.m_Actions.GetChild('Clear');
+        this.collect = menubar.m_Actions.GetChild('Collect');
+        this.remove = menubar.m_Actions.GetChild('Remove');
+
         if (mode == MenuMode.Menu) {
             this.menuMode(showSearch);
         } else if (mode == MenuMode.MenuOnly) {
             this.menuOnlyMode();
-        } else if (mode == MenuMode.Back) {
-            this.backMode();
         }
     }
 
@@ -35,39 +48,22 @@ export default class MenuBar {
             this._menuPopup.Dispose();
     }
 
-    private backMode() {
-        this.menu.m_Back.visible = true;
-        this.menu.m_Menu.visible = false;
-        this.menu.m_Search.visible = false;
-        this.menu.m_Collection.visible = false;
-    }
-
     private menuOnlyMode() {
-        this.menu.m_Back.visible = false;
-        this.menu.m_Menu.visible = true;
-        this.menu.m_Search.visible = false;
-        this.menu.m_Collection.visible = false;
+        this.menu.visible = true;
+        this.actions.visible = false;
         this.registerMenuButton();
     }
 
     private menuMode(showSearch = true) {
-        this.menu.m_Back.visible = false;
-        this.menu.m_Menu.visible = true;
-        this.menu.m_Search.visible = showSearch;
-        this.menu.m_Collection.visible = true;
-
+        this.menu.visible = true;
+        this.actions.visible = true;
+        this.search.visible = showSearch;
         this.registerMenuButton();
-        this.menu.m_Collection.m_Collection.onClick.Set(() => {
-            this.menu.m_Collection.m_c1.selectedIndex = 1;
-        });
-        this.menu.m_Collection.m_Close.onClick.Set(() => {
-            this.menu.m_Collection.m_c1.selectedIndex = 0;
-        });
     }
 
     private registerMenuButton() {
-        this.menu.m_Menu.onClick.Set(() => {
-            this.menuPopup.show(this.menu.m_Menu);
+        this.menu.onClick.Set(() => {
+            this.menuPopup.show(this.bar.m_Menu);
         });
     }
 

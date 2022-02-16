@@ -1,20 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
-<component size="300,64" bgColorEnabled="true">
+<component size="479,84">
   <displayList>
-    <component id="n7_qvrv" name="Back" src="qvrvix" fileName="Componets/Menu/BackButton.xml" xy="0,0" group="n5_tkn4" visible="false">
-      <relation target="" sidePair="width-width%,height-height,middle-middle"/>
-    </component>
-    <component id="n3_tkn4" name="Menu" src="tkn4ig" fileName="Componets/Menu/MenuButton.xml" xy="0,0" group="n5_tkn4">
-      <relation target="" sidePair="width-width%,height-height,middle-middle"/>
-    </component>
-    <component id="n4_tkn4" name="Search" src="tkn4if" fileName="Componets/Menu/SearchButton.xml" xy="80,0" group="n5_tkn4">
-      <relation target="" sidePair="width-width%,height-height,middle-middle"/>
-    </component>
-    <component id="n6_tkn4" name="Collection" src="tkn4ih" fileName="Componets/Menu/CollectionMenu.xml" xy="160,0" size="928,64" group="n5_tkn4">
-      <relation target="" sidePair="width-width%,height-height,middle-middle"/>
-    </component>
-    <group id="n5_tkn4" name="MenuBar" xy="0,0" size="1088,64" advanced="true" layout="hz" colGap="16" excludeInvisibles="true">
-      <relation target="" sidePair="width-width%,height-height%"/>
-    </group>
+    <image id="n0_fus5" name="n0" src="fus5jw" fileName="Images/menu_bar_bg.png" xy="0,0" size="479,84"/>
+    <component id="n7_fus5" name="Menu" src="tkn4ig" fileName="Componets/Menu/MenuButton.xml" xy="17,10" aspect="true"/>
+    <list id="n8_fus5" name="Actions" xy="87,0" size="379,84" layout="row" selectionMode="none" colGap="2" align="right" vAlign="middle">
+      <relation target="" sidePair="height-height,right-right"/>
+      <item url="ui://paw0rq8stkn4if" name="Search"/>
+      <item url="ui://paw0rq8saapxj9" name="SelectAll"/>
+      <item url="ui://paw0rq8saapxja" name="Clear"/>
+      <item url="ui://paw0rq8saapxjb" name="Collect"/>
+      <item url="ui://paw0rq8saapxjc" name="Remove"/>
+    </list>
   </displayList>
 </component>

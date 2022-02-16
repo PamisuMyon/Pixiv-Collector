@@ -28,7 +28,8 @@ export default class UiMain {
 
         // show
         this._navigator = Navigator.createInstance();
-        FairyGUI.GRoot.inst.SetContentScaleFactor(1280, 800, FairyGUI.UIContentScaler.ScreenMatchMode.MatchWidthOrHeight);
+        // no need to scale
+        // FairyGUI.GRoot.inst.SetContentScaleFactor(1280, 800, FairyGUI.UIContentScaler.ScreenMatchMode.MatchWidthOrHeight);
         FairyGUI.GRoot.inst.AddChild(this._navigator);
 
         this.showLogin();

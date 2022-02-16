@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<component size="463,236">
+  <displayList>
+    <text id="n0_nhm2" name="n1" xy="11,0" size="452,42" group="n4_nhm2" alpha="0.6" fontSize="30" color="#639cbf" autoSize="none" text="Refresh Token">
+      <relation target="" sidePair="center-center,middle-middle"/>
+    </text>
+    <component id="n1_nhm2" name="TokenInput" src="gzsdiq" fileName="Componets/Commons/InputField.xml" xy="0,50" size="463,64" group="n4_nhm2">
+      <relation target="" sidePair="center-center,middle-middle"/>
+    </component>
+    <component id="n2_nhm2" name="LoginButton" src="gzsdiu" fileName="Componets/Commons/TextButton.xml" xy="303,122" size="160,64" group="n4_nhm2">
+      <relation target="n1_nhm2" sidePair="right-right"/>
+      <Button title="LOGIN"/>
+    </component>
+    <text id="n3_nhm2" name="HintText" xy="11,194" size="452,42" group="n4_nhm2" alpha="0.6" fontSize="30" color="#3f6479" autoSize="none" text="">
+      <relation target="" sidePair="center-center,middle-middle"/>
+    </text>
+    <group id="n4_nhm2" name="n0" xy="0,0" size="463,236" advanced="true" layout="vt" lineGap="8">
+      <relation target="" sidePair="width-width,height-height"/>
+    </group>
+  </displayList>
+</component>
