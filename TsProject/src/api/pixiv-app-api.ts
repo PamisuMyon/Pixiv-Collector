@@ -140,6 +140,7 @@ export default class PixivAppApi {
             this.userId = obj.user.id;
             this.accessToken = obj.access_token;
             this.refreshToken = obj.refresh_token;
+            console.log(this.accessToken);
         }
         return obj;
     }

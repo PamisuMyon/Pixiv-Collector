@@ -2710,6 +2710,7 @@ var _PixivAppApi = class {
       this.userId = obj.user.id;
       this.accessToken = obj.access_token;
       this.refreshToken = obj.refresh_token;
+      console.log(this.accessToken);
     }
     return obj;
   }
@@ -3334,9 +3335,6 @@ var GalleryScreen = class extends UI_GalleryScreen {
   onBackPressed() {
     if (this.menubar)
       this.menubar.onBackPressed();
-    if (this.searchOptionWindow && this.searchOptionWindow.isShowing) {
-      this.searchOptionWindow.hide();
-    }
   }
   update() {
     if (import_csharp21.UnityEngine.Input.GetButtonDown("Collect")) {
@@ -3589,9 +3587,7 @@ var MenuPopup = class extends UI_MenuPopup {
     import_csharp25.FairyGUI.GRoot.inst.HidePopup(this.window);
   }
   onBackPressed() {
-    if (this._settingsWindow && this._settingsWindow.isShowing) {
-      this._settingsWindow.hide();
-    } else if (this.window && this.window.isShowing) {
+    if (this.window && this.window.isShowing) {
       this.hide();
     }
   }

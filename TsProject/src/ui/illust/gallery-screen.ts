@@ -81,10 +81,10 @@ export default class GalleryScreen extends UI_GalleryScreen implements IScreen {
     public onBackPressed(): void {
         if (this.menubar)
             this.menubar.onBackPressed();
-        if (this.searchOptionWindow
-            && this.searchOptionWindow.isShowing) {
-            this.searchOptionWindow.hide();
-        }
+        // if (this.searchOptionWindow
+        //     && this.searchOptionWindow.isShowing) {
+        //     this.searchOptionWindow.hide();
+        // }
     }
 
     private update() {

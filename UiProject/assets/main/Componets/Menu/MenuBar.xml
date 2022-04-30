@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <component size="479,84">
   <displayList>
-    <image id="n0_fus5" name="n0" src="fus5jw" fileName="Images/menu_bar_bg.png" xy="0,0" size="479,84"/>
+    <image id="n0_fus5" name="n0" src="fus5jw" fileName="Images/menu_bar_bg.png" xy="0,0" size="479,84" alpha="0.7"/>
     <component id="n7_fus5" name="Menu" src="tkn4ig" fileName="Componets/Menu/MenuButton.xml" xy="17,10" aspect="true"/>
     <list id="n8_fus5" name="Actions" xy="87,0" size="379,84" layout="row" selectionMode="none" colGap="2" align="right" vAlign="middle">
       <relation target="" sidePair="height-height,right-right"/>

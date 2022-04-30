@@ -55,9 +55,10 @@ export default class MenuPopup extends UI_MenuPopup {
     }
 
     public onBackPressed() {
-        if (this._settingsWindow && this._settingsWindow.isShowing) {
-            this._settingsWindow.hide();
-        } else if (this.window && this.window.isShowing) {
+        // if (this._settingsWindow && this._settingsWindow.isShowing) {
+        //     this._settingsWindow.hide();
+        // } else 
+        if (this.window && this.window.isShowing) {
             this.hide();
         }
     }
