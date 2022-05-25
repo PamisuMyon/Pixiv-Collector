@@ -57,7 +57,7 @@ export default class CollectionScreen extends UI_CollectionScreen implements ISc
         }
     }
 
-    public onNavTo(data?: any): void {
+    public onNavTo(message: any): void {
     }
 
     private onRenderItem(index: number, obj: FairyGUI.GObject) {

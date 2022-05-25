@@ -22,6 +22,7 @@ import Navigator from "./navigator";
 import SettingsWindow from "./settings-window";
 import MenuPopup from "./menu-popup";
 import UI_LoginPanel from "../gen/ui/main/UI_LoginPanel";
+import UserDetailOptionWindow from "./illust/user-detail-option-window";
 
 export default class UiBinder {
     public static bindAll() {
@@ -52,5 +53,6 @@ export default class UiBinder {
 		bind(IllustDetailScreen);
 		bind(SearchOptionWindow);
 		bind(CollectionScreen);
+		bind(UserDetailOptionWindow);
     }
 }

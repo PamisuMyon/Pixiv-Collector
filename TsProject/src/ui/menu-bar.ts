@@ -1,6 +1,7 @@
 import { FairyGUI } from "csharp";
 import UI_MenuBar from "../gen/ui/main/UI_MenuBar";
 import MenuPopup from "./menu-popup";
+import UiMain from "./ui-main";
 
 export enum MenuMode {
     Menu,
@@ -11,6 +12,7 @@ export default class MenuBar {
 
     private bar: UI_MenuBar;
     public menu: FairyGUI.GButton;
+    public back: FairyGUI.GButton;
     public actions: FairyGUI.GList;
     public search: FairyGUI.GObject;
     public selectAll: FairyGUI.GObject;
@@ -26,9 +28,10 @@ export default class MenuBar {
         return this._menuPopup;
     }
 
-    constructor(menubar: UI_MenuBar, mode: MenuMode = MenuMode.Menu, showSearch = true) {
+    constructor(menubar: UI_MenuBar, mode: MenuMode = MenuMode.Menu, showSearch = true, showBack = false) {
         this.bar = menubar;
         this.menu = menubar.m_Menu;
+        this.back = menubar.m_Back;
         this.actions = menubar.m_Actions;
         this.search = menubar.m_Actions.GetChild('Search');
         this.selectAll = menubar.m_Actions.GetChild('SelectAll');
@@ -37,7 +40,7 @@ export default class MenuBar {
         this.remove = menubar.m_Actions.GetChild('Remove');
 
         if (mode == MenuMode.Menu) {
-            this.menuMode(showSearch);
+            this.menuMode(showSearch, showBack);
         } else if (mode == MenuMode.MenuOnly) {
             this.menuOnlyMode();
         }
@@ -50,14 +53,16 @@ export default class MenuBar {
 
     private menuOnlyMode() {
         this.menu.visible = true;
+        this.back.visible = false;
         this.actions.visible = false;
         this.registerMenuButton();
     }
 
-    private menuMode(showSearch = true) {
+    private menuMode(showSearch = true, showBack = false) {
         this.menu.visible = true;
         this.actions.visible = true;
         this.search.visible = showSearch;
+        this.back.visible = showBack;
         this.registerMenuButton();
     }
 
@@ -65,10 +70,21 @@ export default class MenuBar {
         this.menu.onClick.Set(() => {
             this.menuPopup.show(this.bar.m_Menu);
         });
+        this.back.onClick.Set(() => {
+            this.onBackPressed();
+        });
+    }
+
+    public toggleBackButton(showBack: boolean) {
+        this.back.visible = showBack;
+        this.menu.visible = !showBack;
     }
 
     public onBackPressed() {
+        let handled = false;
         if (this._menuPopup)
-            this._menuPopup.onBackPressed();
+            handled = this._menuPopup.onBackPressed();
+        if (!handled && this.back.visible)
+            UiMain.instance.navigator.navBack();
     }
 }

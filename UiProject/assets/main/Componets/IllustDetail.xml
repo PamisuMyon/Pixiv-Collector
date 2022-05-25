@@ -7,9 +7,9 @@
     <text id="n1_qvrv" name="Description" xy="19,77" size="412,85" group="n4_qvrv" fontSize="24" color="#ffffff" autoSize="none" text="Description">
       <relation target="" sidePair="width-width,height-height%"/>
     </text>
-    <text id="n2_qvrv" name="Details" xy="19,170" size="412,143" group="n4_qvrv" fontSize="18" color="#ffffff" autoSize="none" text="Details">
+    <richtext id="n2_qvrv" name="Details" xy="19,170" size="412,143" group="n4_qvrv" fontSize="18" color="#ffffff" ubb="true" autoSize="none" text="Details">
       <relation target="" sidePair="width-width,height-height%"/>
-    </text>
+    </richtext>
     <list id="n3_qvrv" name="Tags" xy="19,321" size="412,448" group="n4_qvrv" layout="flow_hz" selectionMode="none" overflow="scroll" lineGap="10" colGap="6" autoClearItems="true" scrollItemToViewOnClick="false">
       <relation target="" sidePair="width-width,height-height%,bottomext-bottom"/>
       <item url="ui://paw0rq8sqvrviz" title="Tag"/>

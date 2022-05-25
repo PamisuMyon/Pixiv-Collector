@@ -21,8 +21,8 @@ export default class UI_GalleryScreen extends FairyGUI.GComponent {
 	}
 
 	protected onConstruct () {
-		this.m_ImageList = <UI_ImageList>(this.GetChildAt(0));
-		this.m_StatusBar = <UI_StatusBar>(this.GetChildAt(1));
-		this.m_MenuBar = <UI_MenuBar>(this.GetChildAt(2));
+		this.m_ImageList = <UI_ImageList>(this.GetChildAt(1));
+		this.m_StatusBar = <UI_StatusBar>(this.GetChildAt(2));
+		this.m_MenuBar = <UI_MenuBar>(this.GetChildAt(3));
 	}
 }

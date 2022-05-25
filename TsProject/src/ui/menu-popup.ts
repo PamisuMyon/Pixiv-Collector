@@ -14,7 +14,7 @@ export default class MenuPopup extends UI_MenuPopup {
     private get settingsWindow() {
         if (!this._settingsWindow)
             this._settingsWindow = SettingsWindow.createInstance();
-        return this._settingsWindow
+        return this._settingsWindow;
     }
 
     protected onConstruct(): void {
@@ -26,14 +26,17 @@ export default class MenuPopup extends UI_MenuPopup {
         this.m_list.onClickItem.Set(context => {
             if (context.data) {
                 const index = this.m_list.GetChildIndex(context.data);
-                if (index == 0) {
+                if (index == 0) { // Search & Recommended
                     if (app.loggedIn)
                         UiMain.instance.navigator.navTo(GalleryScreen.URL, null, true);
                     else 
                         UiMain.instance.navigator.navTo(LoginScreen.URL, null, true);
-                } else if (index == 1) {
+                } else if (index == 1) {    // User Page
+                    const data = { action: 'UserDetail' };
+                    UiMain.instance.navigator.navTo(GalleryScreen.URL, data, true);
+                } else if (index == 2) {    // Collection
                     UiMain.instance.navigator.navTo(CollectionScreen.URL, null, true);
-                } else if (index == 2) {
+                } else if (index == 3) {    // Settings
                     this.settingsWindow.show();
                 }
             }
@@ -60,7 +63,9 @@ export default class MenuPopup extends UI_MenuPopup {
         // } else 
         if (this.window && this.window.isShowing) {
             this.hide();
+            return true;
         }
+        return false;
     }
     
 }

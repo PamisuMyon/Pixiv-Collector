@@ -206,6 +206,46 @@ export default class PixivAppApi {
         const result = await this.request(url, option);
         return this.parse(result.body) as IllustResult;
     }
+
+    public async userIllusts(args: UserIllustsArguments) {
+        args = args || {};
+        args = {
+            user_id: args.user_id,
+            type: args.type || 'illust',
+            offset: args.offset || 0,
+            filter: 'for_ios'
+        }
+        const url = this.host + '/v1/user/illusts';
+        const option = {
+            method: 'GET',
+            parameters: args
+        };
+        const result = await this.request(url, option);
+        return this.parse(result.body) as IllustResult;
+    }
+
+    public async userBookmarksIllust(args: UserBookmarksIllustArguments) {
+        args = args || {};
+        args = {
+            user_id: args.user_id,
+            max_bookmark_id: args.max_bookmark_id,
+            tag: args.tag,
+            restrict: 'public',
+            filter: 'for_ios'
+        }
+        if (!args.max_bookmark_id)
+            delete args.max_bookmark_id;
+        if (!args.tag)
+            delete args.tag;
+        const url = this.host + '/v1/user/bookmarks/illust';
+        const option = {
+            method: 'GET',
+            parameters: args
+        };
+        const result = await this.request(url, option);
+        return this.parse(result.body) as IllustResult;
+    }
+    
 }
 
 interface IllustResult {
@@ -234,5 +274,20 @@ export interface IllustSearchArguments {
     start_date?: string;
     end_date?: string;
     offset?: number;
+    filter?: string;
+}
+
+export interface UserIllustsArguments {
+    user_id?: number;
+    offset?: number;
+    type?: string;
+    filter?: string;
+}
+
+export interface UserBookmarksIllustArguments {
+    user_id?: number;
+    max_bookmark_id?: number;
+    restrict?: string;
+    tag?: string;
     filter?: string;
 }

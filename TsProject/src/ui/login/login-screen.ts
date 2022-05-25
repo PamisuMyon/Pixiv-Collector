@@ -56,7 +56,7 @@ export default class LoginScreen extends UI_LoginScreen implements IScreen {
         }
     }
 
-    public onNavTo(data?: any): void {
+    public onNavTo(message: any): void {
     }
 
     public onBackPressed(): void {

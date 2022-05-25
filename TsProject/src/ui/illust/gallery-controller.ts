@@ -1,15 +1,18 @@
 import { Illust } from "../../api/entities";
-import PixivAppApi, { IllustSearchArguments } from "../../api/pixiv-app-api";
+import PixivAppApi, { IllustSearchArguments, UserIllustsArguments } from "../../api/pixiv-app-api";
 import Settings from "../../common/settings";
 import Util from "../../common/util";
 import CollectorContoller from "./base-collector-controller";
 import type GalleryScreen from "./gallery-screen";
 import { SearchOption } from "./search-option-window";
+import { UserDetailOption } from "./user-detail-option-window";
 
 enum DataType {
     None,
     Recommended,
-    Search
+    Search,
+    UserIllusts,
+    UserBookmarksIllust,
 }
 
 export default class GalleryController extends CollectorContoller {
@@ -18,6 +21,7 @@ export default class GalleryController extends CollectorContoller {
     private cancelToken: string;
     private nextUrl: string;
     private searchOption: SearchOption;
+    private userDetailOption: UserDetailOption;
 
     constructor(view: GalleryScreen) {
         super();
@@ -119,6 +123,45 @@ export default class GalleryController extends CollectorContoller {
         }
     }
 
+    public async getUserIllusts(nextUrl?: string, option?: UserDetailOption) {
+        let args;
+        if (nextUrl) {
+            args = PixivAppApi.instance.parseQueryString(nextUrl);
+        } else {
+            args = option || {};
+        }
+
+        const targetDataType = option.action == 'user_bookmarks_illust'? 
+            DataType.UserBookmarksIllust : DataType.UserIllusts;
+        if (this.dataType != targetDataType || !nextUrl) {
+            this.dataType = targetDataType;
+            this.illusts = [];
+            this.refreshView();
+        }
+
+        const cancelToken = Util.generateToken();
+        this.cancelToken = cancelToken;
+
+        let result: any;
+        if (option.action == 'user_bookmarks_illust')
+            result = await PixivAppApi.instance.userBookmarksIllust(args);
+        else
+            result = await PixivAppApi.instance.userIllusts(args);
+        
+        // if token mismatch, cancel this request
+        if (cancelToken != this.cancelToken) {
+            return;
+        }
+        this.nextUrl = result.next_url;
+        this.userDetailOption = option;
+        
+        // complete data & update view
+        this.completeData(result.illusts);
+        await this.initCollection(result.illusts);
+        this.illusts.push(...result.illusts);
+        this.refreshView();
+    }
+
     private filterIllusts(illusts: Illust[], minBookmarks: number) {
         const r = new Array<Illust>();
         illusts.forEach(it => {
@@ -135,6 +178,10 @@ export default class GalleryController extends CollectorContoller {
             await this.getRecommended(this.nextUrl);
         } else if (this.dataType == DataType.Search) {
             await this.search(this.nextUrl, this.searchOption);
+        } else if (this.dataType == DataType.UserIllusts) {
+            await this.getUserIllusts(this.nextUrl, this.userDetailOption);
+        } else if (this.dataType == DataType.UserBookmarksIllust) {
+            await this.getUserIllusts(this.nextUrl, this.userDetailOption);
         }
     }
 

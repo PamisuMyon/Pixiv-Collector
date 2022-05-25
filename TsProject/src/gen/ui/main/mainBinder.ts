@@ -1,6 +1,7 @@
 /** This is an automatically generated class by FairyGUI. Please do not modify it. **/
 
 import UI_GalleryScreen from "./UI_GalleryScreen";
+import UI_UserDetailOptionWindow from "./UI_UserDetailOptionWindow";
 import UI_SearchOptionWindow from "./UI_SearchOptionWindow";
 import UI_Dropdown_popup from "./UI_Dropdown_popup";
 import UI_MenuPopup from "./UI_MenuPopup";
@@ -23,6 +24,7 @@ import { bind } from "./fairygui";
 export default class mainBinder {
 	public static bindAll() {
 		bind(UI_GalleryScreen);
+		bind(UI_UserDetailOptionWindow);
 		bind(UI_SearchOptionWindow);
 		bind(UI_Dropdown_popup);
 		bind(UI_MenuPopup);

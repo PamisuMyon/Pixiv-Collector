@@ -7,6 +7,7 @@ import { FairyGUI } from "csharp";
 export default class UI_MenuBar extends FairyGUI.GComponent {
 
 	public m_Menu: FairyGUI.GButton;
+	public m_Back: FairyGUI.GButton;
 	public m_Actions: FairyGUI.GList;
 	public static URL: string = "ui://paw0rq8sfus5jv";
 
@@ -17,6 +18,7 @@ export default class UI_MenuBar extends FairyGUI.GComponent {
 
 	protected onConstruct () {
 		this.m_Menu = <FairyGUI.GButton>(this.GetChildAt(1));
-		this.m_Actions = <FairyGUI.GList>(this.GetChildAt(2));
+		this.m_Back = <FairyGUI.GButton>(this.GetChildAt(2));
+		this.m_Actions = <FairyGUI.GList>(this.GetChildAt(3));
 	}
 }

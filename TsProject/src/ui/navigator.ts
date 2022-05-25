@@ -76,7 +76,7 @@ export default class Navigator extends UI_Navigator {
         this.makeFullScreen(screen);
         this.m_Container.AddChild(screen);
         this.navStack.push(screen);
-        screen.onNavTo(data);
+        screen.onNavTo({ isNavBack: false, data });
     }
 
     public navBack(data?: any, dispose = false) {
@@ -86,7 +86,7 @@ export default class Navigator extends UI_Navigator {
             if (!dispose)
                 this.pool.ReturnObject(obj);
             if (this.navStack.length > 0) {
-                this.navStack[this.navStack.length - 1].onNavTo(data);
+                this.navStack[this.navStack.length - 1].onNavTo({ isNavBack: true, data });
             }
         }
     }

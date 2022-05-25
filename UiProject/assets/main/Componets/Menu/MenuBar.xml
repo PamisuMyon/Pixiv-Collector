@@ -3,6 +3,7 @@
   <displayList>
     <image id="n0_fus5" name="n0" src="fus5jw" fileName="Images/menu_bar_bg.png" xy="0,0" size="479,84" alpha="0.7"/>
     <component id="n7_fus5" name="Menu" src="tkn4ig" fileName="Componets/Menu/MenuButton.xml" xy="17,10" aspect="true"/>
+    <component id="n9_ov9t" name="Back" src="qvrvix" fileName="Componets/Menu/BackButton.xml" xy="17,10" aspect="true"/>
     <list id="n8_fus5" name="Actions" xy="87,0" size="379,84" layout="row" selectionMode="none" colGap="2" align="right" vAlign="middle">
       <relation target="" sidePair="height-height,right-right"/>
       <item url="ui://paw0rq8stkn4if" name="Search"/>

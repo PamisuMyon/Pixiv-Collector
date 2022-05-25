@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <component size="1280,800" bgColorEnabled="true" bgColor="#0e171e">
   <displayList>
+    <component id="n3_ov9t" name="n3" src="aapxjs" fileName="Componets/Commons/ScreenBackground.xml" xy="0,0">
+      <relation target="" sidePair="width-width,height-height"/>
+    </component>
     <component id="n0_tkn4" name="ImageList" src="tkn4id" fileName="Componets/ImageList.xml" xy="0,0" size="1280,800">
       <relation target="" sidePair="width-width,height-height"/>
     </component>

@@ -4,11 +4,17 @@ import MenuBar from "../menu-bar";
 import GalleryController from "./gallery-controller";
 import IllustDetailScreen from "./illust-detail-screen";
 import UiMain from "../ui-main";
-import IScreen from "../iscreen";
+import IScreen, { NavigationMessage } from "../iscreen";
 import SearchOptionWindow from "./search-option-window";
+import UserDetailOptionWindow from "./user-detail-option-window";
 import UI_GalleryScreen from "../../gen/ui/main/UI_GalleryScreen";
 import { Listener } from "../../common/event-emitter";
 import { app } from "../../app";
+
+enum Type {
+    Illust,
+    UserDetail,
+}
 
 export default class GalleryScreen extends UI_GalleryScreen implements IScreen {
 
@@ -16,7 +22,9 @@ export default class GalleryScreen extends UI_GalleryScreen implements IScreen {
     private menubar: MenuBar;
     private imageList: FairyGUI.GList;
     private searchOptionWindow: SearchOptionWindow;
+    private userDetailOptionWindow: UserDetailOptionWindow;
     private updateStub: Listener;
+    private type = Type.Illust;
 
     constructor() {
         super();
@@ -31,10 +39,18 @@ export default class GalleryScreen extends UI_GalleryScreen implements IScreen {
             this.controller.search(null, option);
         };
 
+        this.userDetailOptionWindow = UserDetailOptionWindow.createInstance();
+        this.userDetailOptionWindow.onApply = option => {
+            this.controller.getUserIllusts(null, option);
+        };
+
         // menu actions
         this.menubar = new MenuBar(this.m_MenuBar);
         this.menubar.search.onClick.Set(() => {
-            this.searchOptionWindow.show();
+            if (this.type == Type.UserDetail)
+                this.userDetailOptionWindow.show();
+            else
+                this.searchOptionWindow.show();
         });
         this.menubar.selectAll.onClick.Set(() => {
             this.selectCurrentPage();
@@ -62,8 +78,6 @@ export default class GalleryScreen extends UI_GalleryScreen implements IScreen {
             this.onRenderItem(index, obj);
         };
 
-        this.controller.getRecommended();
-
         this.updateStub = this.update.bind(this);
         app.emitter.on('update', this.updateStub);
     }
@@ -75,7 +89,31 @@ export default class GalleryScreen extends UI_GalleryScreen implements IScreen {
         app.emitter.off('update', this.updateStub);
     }
 
-    public onNavTo(data: any): void {
+    public onNavTo(message: NavigationMessage): void {
+        if (message.isNavBack)  // TODO refesh data when nav back
+            return;
+        if (!message.data) {
+            this.userDetailOptionWindow.m_Keywords.m_text.text = '';
+            this.menubar.toggleBackButton(false);
+            this.controller.getRecommended();
+            return;
+        }
+        const action = message.data.action;
+        if (action == 'UserDetail') {
+            this.type = Type.UserDetail;
+            if (message.data.userId) {
+                this.userDetailOptionWindow.m_Keywords.m_text.text = message.data.userId;
+                this.menubar.toggleBackButton(true);
+                this.controller.getUserIllusts(null, {
+                    user_id: message.data.userId,
+                    action: 'user_illusts',
+                });
+            }
+            else {
+                this.menubar.toggleBackButton(false);
+                this.userDetailOptionWindow.show();
+            }
+        }
     }
 
     public onBackPressed(): void {
