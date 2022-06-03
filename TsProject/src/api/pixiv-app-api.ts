@@ -246,6 +246,32 @@ export default class PixivAppApi {
         return this.parse(result.body) as IllustResult;
     }
     
+    public async illustBookmarkAdd(illust_id: number, restrict?: string, tags?: string) {
+        const url = this.host + '/v2/illust/bookmark/add';
+        const data = {
+            illust_id,
+            restrict: restrict || 'public'
+        };
+        const option: RequestOption = {
+            method: 'POST',
+            formUrlencodedDatas: data,
+        };
+        const result = await this.request(url, option);
+        return this.parse(result.body);
+    }
+
+    public async illustBookmarkDelete(illust_id: number) {
+        const url = this.host + '/v1/illust/bookmark/delete';
+        const data = {
+            illust_id,
+        };
+        const option: RequestOption = {
+            method: 'POST',
+            formUrlencodedDatas: data,
+        };
+        const result = await this.request(url, option);
+        return this.parse(result.body);
+    }
 }
 
 interface IllustResult {

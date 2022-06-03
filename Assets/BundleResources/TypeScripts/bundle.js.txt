@@ -2810,6 +2810,31 @@ var _PixivAppApi = class {
     const result = await this.request(url, option);
     return this.parse(result.body);
   }
+  async illustBookmarkAdd(illust_id, restrict, tags) {
+    const url = this.host + "/v2/illust/bookmark/add";
+    const data = {
+      illust_id,
+      restrict: restrict || "public"
+    };
+    const option = {
+      method: "POST",
+      formUrlencodedDatas: data
+    };
+    const result = await this.request(url, option);
+    return this.parse(result.body);
+  }
+  async illustBookmarkDelete(illust_id) {
+    const url = this.host + "/v1/illust/bookmark/delete";
+    const data = {
+      illust_id
+    };
+    const option = {
+      method: "POST",
+      formUrlencodedDatas: data
+    };
+    const result = await this.request(url, option);
+    return this.parse(result.body);
+  }
 };
 var PixivAppApi = _PixivAppApi;
 __publicField(PixivAppApi, "_instance");
@@ -3014,6 +3039,18 @@ var BaseCollectorContoller = class {
       illust.collected = exist;
     }
   }
+  async addUserBookmark(illusts) {
+    for (const illust of illusts) {
+      await PixivAppApi.instance.illustBookmarkAdd(illust.id);
+      await Util.sleep(500);
+    }
+  }
+  async deleteUserBookmark(illusts) {
+    for (const illust of illusts) {
+      await PixivAppApi.instance.illustBookmarkDelete(illust.id);
+      await Util.sleep(500);
+    }
+  }
   async collect() {
     const toCollect = [];
     for (const illust of this.illusts) {
@@ -3027,6 +3064,7 @@ var BaseCollectorContoller = class {
     const result = await CollectorApi.instance.illustPut(toCollect);
     console.log("Illust collect result: " + result.msg);
     await this.initCollection(toCollect);
+    this.addUserBookmark(toCollect).then();
     this.clearSelection();
     this.refreshView();
   }
@@ -3047,6 +3085,7 @@ var BaseCollectorContoller = class {
     const result = await CollectorApi.instance.illustDelete(ids);
     console.log("Illust delete result: " + result.msg);
     await this.initCollection(toDelete);
+    this.deleteUserBookmark(toDelete).then();
     this.clearSelection();
     this.refreshView();
   }

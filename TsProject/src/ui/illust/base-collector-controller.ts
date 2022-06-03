@@ -1,5 +1,7 @@
 import CollectorApi from "../../api/collector-api";
 import { Illust } from "../../api/entities";
+import PixivAppApi from "../../api/pixiv-app-api";
+import Util from "../../common/util";
 
 export default abstract class BaseCollectorContoller {
 
@@ -61,6 +63,20 @@ export default abstract class BaseCollectorContoller {
         }
     }
 
+    public async addUserBookmark(illusts: Illust[]) {
+        for (const illust of illusts) {
+            await PixivAppApi.instance.illustBookmarkAdd(illust.id);
+            await Util.sleep(500);
+        }
+    }
+
+    public async deleteUserBookmark(illusts: Illust[]) {
+        for (const illust of illusts) {
+            await PixivAppApi.instance.illustBookmarkDelete(illust.id);
+            await Util.sleep(500);
+        }
+    }
+
     public async collect() {
         const toCollect: Illust[] = [];
         for (const illust of this.illusts) {
@@ -74,6 +90,7 @@ export default abstract class BaseCollectorContoller {
         const result = await CollectorApi.instance.illustPut(toCollect);
         console.log('Illust collect result: ' + result.msg)
         await this.initCollection(toCollect);
+        this.addUserBookmark(toCollect).then();
         this.clearSelection();
         this.refreshView();
     }
@@ -95,6 +112,7 @@ export default abstract class BaseCollectorContoller {
         const result = await CollectorApi.instance.illustDelete(ids);
         console.log('Illust delete result: ' + result.msg)
         await this.initCollection(toDelete);
+        this.deleteUserBookmark(toDelete).then();
         this.clearSelection();
         this.refreshView();
     }
